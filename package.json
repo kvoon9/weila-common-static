@@ -19,6 +19,7 @@
     "@weila/network": "https://pkg.pr.new/kvoon3/wl-network/@weila/network@0fa834aa31508f06a7b4b2184b484575b37f5090",
     "astro": "^5.13.4",
     "astro-pdf": "^1.7.2",
+    "github-markdown-css": "^5.8.1",
     "md5": "^2.3.0",
     "pdfjs-dist": "^5.4.54",
     "qrcode": "^1.5.4",

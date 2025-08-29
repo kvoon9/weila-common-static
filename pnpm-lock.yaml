@@ -29,6 +29,9 @@ importers:
       astro-pdf:
         specifier: ^1.7.2
         version: 1.7.2(astro@5.13.4(@types/node@24.3.0)(jiti@2.5.1)(rollup@4.49.0)(typescript@5.9.2)(yaml@2.8.1))(typescript@5.9.2)
+      github-markdown-css:
+        specifier: ^5.8.1
+        version: 5.8.1
       md5:
         specifier: ^2.3.0
         version: 2.3.0
@@ -2228,6 +2231,10 @@ packages:
   get-uri@6.0.5:
     resolution: {integrity: sha512-b1O07XYq8eRuVzBNgJLstU6FYc1tS6wnMtF1I1D9lE8LxZSOGZ7LhxN54yPP6mGw5f2CkXY2BQUL9Fx41qvcIg==}
     engines: {node: '>= 14'}
+
+  github-markdown-css@5.8.1:
+    resolution: {integrity: sha512-8G+PFvqigBQSWLQjyzgpa2ThD9bo7+kDsriUIidGcRhXgmcaAWUIpCZf8DavJgc+xifjbCG+GvMyWr0XMXmc7g==}
+    engines: {node: '>=10'}
 
   github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
@@ -6241,6 +6248,8 @@ snapshots:
       debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
+
+  github-markdown-css@5.8.1: {}
 
   github-slugger@2.0.0: {}
 
