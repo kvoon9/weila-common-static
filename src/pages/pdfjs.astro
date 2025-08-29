@@ -1,0 +1,90 @@
+---
+// PDF.js example
+const PDF_PATH = '/license.pdf'
+const WORKER_PATH = '//unpkg.com/pdfjs-dist@4.0.269/build/pdf.worker.min.mjs'
+---
+
+<main>
+  <h1>PDF.js example</h1>
+  <pdf-viewer data-pdf-path={PDF_PATH} data-worker-path={WORKER_PATH}> </pdf-viewer>
+</main>
+
+<script is:inline src="https://unpkg.com/pdfjs-dist@4.0.269/build/pdf.min.mjs" type="module"></script>
+
+<script>
+  import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
+
+  declare global {
+    interface Window {
+      pdfjsLib?: any
+    }
+  }
+
+  class PDFViewer extends HTMLElement {
+    pdfPath
+    workerPath
+    loadingTask: PDFDocumentLoadingTask | null = null
+    canvas
+
+    constructor() {
+      super()
+      this.attachShadow({ mode: 'open' })
+      this.pdfPath = this.getAttribute('data-pdf-path')
+      this.workerPath = this.getAttribute('data-worker-path')
+      this.canvas = document.createElement('canvas')
+      this.canvas.setAttribute('id', 'pdf-canvas')
+      this.canvas.style.border = '1px solid black'
+      this.canvas.style.direction = 'ltr'
+
+      this.shadowRoot?.append(this.canvas)
+    }
+
+    async load() {
+      if (!this.loadingTask) return
+
+      const pdfDocument = await this.loadingTask.promise
+      // Request a first page
+      const pdfPage = await pdfDocument.getPage(1)
+
+      // Total Pages
+      const numPages = pdfDocument.numPages
+      console.log(`Number of Pages: ${numPages}`)
+
+      // Display page on the existing canvas with 100% scale.
+      const viewport = pdfPage.getViewport({ scale: 1.0 })
+      const ctx = this.canvas.getContext('2d')
+
+      if (!this.canvas || !ctx) {
+        return
+      }
+
+      this.canvas.width = viewport.width
+      this.canvas.height = viewport.height
+
+      // Render PDF page into canvas context
+      const renderTask = pdfPage.render({
+        canvasContext: ctx,
+        viewport,
+      })
+      await renderTask.promise
+    }
+
+    handleLoaded() {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = this.workerPath
+      this.loadingTask = window.pdfjsLib.getDocument(this.pdfPath)
+      this.load()
+    }
+
+    connectedCallback() {
+      if (!this.pdfPath || !this.workerPath) return
+
+      window.addEventListener('DOMContentLoaded', this.handleLoaded.bind(this))
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener('DOMContentLoaded', this.handleLoaded.bind(this))
+    }
+  }
+
+  customElements.define('pdf-viewer', PDFViewer)
+</script>
