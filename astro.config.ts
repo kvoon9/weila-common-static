@@ -7,7 +7,7 @@ import UnoCSS from 'unocss/astro'
 // https://astro.build/config
 export default defineConfig({
   site: 'https://demoui.weila.hk',
-  base: '/weila-common-static',
+  base: '/weila-common-static/common',
   integrations: [
     UnoCSS({
       injectReset: true,
