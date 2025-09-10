@@ -27,7 +27,7 @@ onMounted(async () => {
     type = 'weila-normal'
   } = parseQuery<{ type: string }>(parseURL(window.location.href).search)
 
-  const api = new WeilaApi(appid, appkey)
+  const api = new WeilaApi(appid.value, appkey.value)
   data.value = await api.v2.fetch('common/app-download', {
     body: {
       type,
