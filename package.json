@@ -10,7 +10,7 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "zip": "tsx ./scripts/zip.ts"
+    "archive": "tsx scripts/archive.ts"
   },
   "dependencies": {
     "@astrojs/vue": "^5.1.0",
