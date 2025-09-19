@@ -67,45 +67,57 @@ f) 自启动 为了让您更及时的收到对讲语音，我们产品提供开�
 
 为了更好的向您提供服务，我们使用了第三方SDK，在接入的时候需要开通一些权限具体如下：
 
-a) 高德地图SDK
+a) 地图SDK
 
-提供方名称：高德
+开发者:北京高德图强科技有限公司
 
-业务场景：展示位置以及将位置分享给本应用内用户
+业务场景：展示用户位置以及地图
 
 收集方式：后台静默收集
 
 个人信息：位置信息以及设计定位技术需要处理的设备信息（如 设备序列号、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息、设备信号强度信息）
 
-隐私政策链接：https://map.amap.com/doc/serviceitem.html
+隐私政策链接：https://lbs.amap.com/pages/privacy/
 
-b) 腾讯Bugly
+a) 轻量版地图SDK
 
-提供方名称：腾讯
+开发者:北京高德图强科技有限公司
 
-业务场景：统计崩溃日志以及升级推送
+业务场景：展示用户位置以及地图
+
+收集方式：后台静默收集
+
+个人信息：位置信息以及设计定位技术需要处理的设备信息（如 设备序列号、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息、设备信号强度信息）
+
+隐私政策链接：https://lbs.amap.com/pages/privacy/
+
+c) 定位SDK
+
+开发者:北京高德图强科技有限公司
+
+业务场景：获取位置信息
+
+收集方式：后台静默收集
+
+个人信息：位置信息以及设计定位技术需要处理的设备信息（如 设备序列号、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息、设备信号强度信息）
+
+隐私政策链接：https://lbs.amap.com/pages/privacy/
+
+d) Bugly Android
+
+开发者：深圳市腾讯计算机系统有限公司
+
+业务场景：统计崩溃日志
 
 收集方式：后台静默收集
 
 个人信息：硬件型号、操作系统版本，已安装APP信息，设备配置，设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、硬件型号、网络设备硬件地址(MAC)
 
-隐私政策链接：https://bugly.qq.com/v2/contract
+隐私政策链接：https://privacy.qq.com/document/preview/fc748b3d96224fdb825ea79e132c1a56
 
-c) 阿里云对象存储 OSS
+e) 微信OpenSDK Android
 
-提供方名称：阿里云
-
-业务场景：文件、消息存储
-
-收集方式：后台静默收集
-
-个人信息：设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、硬件型号、网络设备硬件地址(MAC) 、网络身份标识信息：IP地址（粗略的位置信息）、日志信息
-
-隐私政策链接：http://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201902141711_54837.html?spm=a2c4g.11186623.0.0.3fc85ff2WPlDw6
-
-d) 腾讯开放平台SDK
-
-提供方名称：腾讯
+开发者：深圳市腾讯计算机系统有限公司
 
 业务场景：分享
 
@@ -113,7 +125,19 @@ d) 腾讯开放平台SDK
 
 个人信息：设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、网络设备硬件地址(MAC) 、网络身份标识信息：IP地址（粗略的位置信息）、日志信息
 
-隐私政策链接：https://weixin.qq.com/cgi-bin/readtemplate?t=weixin_agreement&s=privacy&cc=CN
+隐私政策链接：https://support.weixin.qq.com/cgi-bin/mmsupportacctnodeweb-bin/pages/RYiYJkLOrQwu0nb8
+
+f) 对象存储OSS Android SDK
+
+开发者：阿里云计算有限公司
+
+业务场景：文件、消息存储
+
+收集方式：后台静默收集
+
+个人信息：设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、硬件型号、网络设备硬件地址(MAC) 、网络身份标识信息：IP地址（粗略的位置信息）、日志信息
+
+隐私政策链接：https://terms.alicdn.com/legal-agreement/terms/privacy_policy_full/20240202100310511/20240202100310511.html
 
 三、我们如何存储个人信息
 
