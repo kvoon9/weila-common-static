@@ -79,7 +79,7 @@ a) 地图SDK
 
 隐私政策链接：https://lbs.amap.com/pages/privacy/
 
-a) 轻量版地图SDK
+b) 轻量版地图SDK
 
 开发者:北京高德图强科技有限公司
 
