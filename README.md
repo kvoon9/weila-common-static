@@ -16,25 +16,41 @@
 
 ## 📱 部署路由
 
-所有路由均以 `/common` 为基础路径。
-
 ### iOS 路由
 
-- **企业版隐私政策**: `/common/ios/corp/privacy`
-- **企业版许可证**: `/common/ios/corp/license`
-- **个人版隐私政策**: `/common/ios/personal/privacy`
+- **企业版隐私政策**
+  - 预览环境: `https://weila-static-content.vercel.app/common/ios/corp/privacy`
+  - 生产环境: `http://static.voischat.cn/common/ios/corp/privacy`
+- **企业版许可证**
+  - 预览环境: `https://weila-static-content.vercel.app/common/ios/corp/license`
+  - 生产环境: `http://static.voischat.cn/common/ios/corp/license`
+- **个人版隐私政策**
+  - 预览环境: `https://weila-static-content.vercel.app/common/ios/personal/privacy`
+  - 生产环境: `http://static.voischat.cn/common/ios/personal/privacy`
 
 ### Android 路由
 
-- **企业版隐私政策**: `/common/android/corp/privacy`
-- **企业版服务协议**: `/common/android/corp/service`
-- **个人版隐私政策**: `/common/android/personal/privacy`
-- **个人版许可证**: `/common/android/personal/license`
+- **企业版隐私政策**
+  - 预览环境: `https://weila-static-content.vercel.app/common/android/corp/privacy`
+  - 生产环境: `http://static.voischat.cn/common/android/corp/privacy`
+- **企业版服务协议**
+  - 预览环境: `https://weila-static-content.vercel.app/common/android/corp/service`
+  - 生产环境: `http://static.voischat.cn/common/android/corp/service`
+- **个人版隐私政策**
+  - 预览环境: `https://weila-static-content.vercel.app/common/android/personal/privacy`
+  - 生产环境: `http://static.voischat.cn/common/android/personal/privacy`
+- **个人版许可证**
+  - 预览环境: `https://weila-static-content.vercel.app/common/android/personal/license`
+  - 生产环境: `http://static.voischat.cn/common/android/personal/license`
 
 ### Web 路由
 
-- **企业版隐私政策**: `/common/web/corp/privacy`
+- **企业版隐私政策**
+  - 预览环境: `https://weila-static-content.vercel.app/common/web/corp/privacy`
+  - 生产环境: `http://static.voischat.cn/common/web/corp/privacy`
 
 ### 其他
 
-- **应用下载页面**: `/common/app-download`
+- **应用下载页面**
+  - 预览环境: `https://weila-static-content.vercel.app/common/app-download`
+  - 生产环境: `http://static.voischat.cn/common/app-download`
