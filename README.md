@@ -45,7 +45,7 @@
 
 ### Web 路由
 
-- **企业版隐私政策**
+- **Web 企业版隐私政策**
   - 预览环境: `https://weila-static-content.vercel.app/common/web/corp/privacy`
   - 生产环境: `http://static.voischat.cn/common/web/corp/privacy`
 
