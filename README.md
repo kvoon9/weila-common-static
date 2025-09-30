@@ -1,46 +1,40 @@
-# Astro Starter Kit: Basics
-
-```sh
-pnpm create astro@latest -- --template basics
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+# Weila Static Content
 
 ```text
 /
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
+├── src/
+│   ├── pages/           # 页面和路由
+│   │   ├── ios/         # iOS 平台相关页面
+│   │   ├── android/     # Android 平台相关页面
+│   │   ├── web/         # Web 平台相关页面
+│   │   └── *.astro      # 通用页面
+│   ├── components/      # Vue 组件
+│   ├── layouts/         # Astro 布局组件
+│   └── shared/          # 共享常量和工具
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 📱 部署路由
 
-## 🧞 Commands
+所有路由均以 `/common` 为基础路径。
 
-All commands are run from the root of the project, from a terminal:
+### iOS 路由
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+- **企业版隐私政策**: `/common/ios/corp/privacy`
+- **企业版许可证**: `/common/ios/corp/license`
+- **个人版隐私政策**: `/common/ios/personal/privacy`
 
-## 👀 Want to learn more?
+### Android 路由
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- **企业版隐私政策**: `/common/android/corp/privacy`
+- **企业版服务协议**: `/common/android/corp/service`
+- **个人版隐私政策**: `/common/android/personal/privacy`
+- **个人版许可证**: `/common/android/personal/license`
+
+### Web 路由
+
+- **企业版隐私政策**: `/common/web/corp/privacy`
+
+### 其他
+
+- **应用下载页面**: `/common/app-download`
