@@ -59,42 +59,42 @@ layout: '~/layouts/Typo.astro'
   - 开发者:北京高德图强科技有限公司
   - 业务场景：展示用户位置以及地图
   - 收集方式：后台静默收集
-  - 个人信息：位置信息以及涉及定位技术需要处理的设备信息（设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息
+  - 个人信息：**位置信息以及涉及定位技术需要处理的设备信息（设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息**
   - 隐私政策链接：https://lbs.amap.com/pages/privacy/
 
 - **b) 轻量版地图SDK**
   - 开发者:北京高德图强科技有限公司
   - 业务场景：展示用户位置以及地图
   - 收集方式：后台静默收集
-  - 个人信息：位置信息以及涉及定位技术需要处理的设备信息（设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息
+  - 个人信息：**位置信息以及涉及定位技术需要处理的设备信息（设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息**
   - 隐私政策链接：https://lbs.amap.com/pages/privacy/
 
 - **c) 定位SDK**
   - 开发者:北京高德图强科技有限公司
   - 业务场景：获取位置信息
   - 收集方式：后台静默收集
-  - 个人信息：位置信息以及涉及定位技术需要处理的设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息、经纬度
+  - 个人信息：**位置信息以及涉及定位技术需要处理的设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、IP 地址、GNSS信息，基站信息、WiFi状态、WiFi参数、WiFi列表、信号强度信息，蓝牙信息、传感器信息（矢量、地磁、加速度、陀螺、方向、光敏、压力、重力、计步、台阶检测）、已安装APP信息、经纬度**
   - 隐私政策链接：https://lbs.amap.com/pages/privacy/
 
 - **d) Bugly Android**
   - 开发者：深圳市腾讯计算机系统有限公司
   - 业务场景：统计崩溃日志
   - 收集方式：后台静默收集
-  - 个人信息：硬件型号、操作系统版本，已安装APP信息，设备配置，设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、硬件型号、网络设备硬件地址(MAC)
+  - 个人信息：**硬件型号、操作系统版本，已安装APP信息，设备配置，设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、硬件型号、网络设备硬件地址(MAC)**
   - 隐私政策链接：https://privacy.qq.com/document/preview/fc748b3d96224fdb825ea79e132c1a56
 
 - **e) 微信OpenSDK Android**
   - 开发者：深圳市腾讯计算机系统有限公司
   - 业务场景：分享
   - 收集方式：后台静默收集
-  - 个人信息：设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、网络设备硬件地址(MAC) 、网络身份标识信息：IP地址（粗略的位置信息）、日志信息
+  - 个人信息：**设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、网络设备硬件地址(MAC) 、网络身份标识信息：IP地址（粗略的位置信息）、日志信息**
   - 隐私政策链接：https://support.weixin.qq.com/cgi-bin/mmsupportacctnodeweb-bin/pages/RYiYJkLOrQwu0nb8
 
 - **f) 对象存储OSS Android SDK**
   - 开发者：阿里云计算有限公司
   - 业务场景：文件、消息存储
   - 收集方式：后台静默收集
-  - 个人信息：设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、硬件型号、网络设备硬件地址(MAC) 、网络身份标识信息：IP地址（粗略的位置信息）、日志信息
+  - 个人信息：**设备信息(设备序列号/IMEI/OAID/UUID/android Id/SIM卡IMSI)、硬件型号、网络设备硬件地址(MAC) 、网络身份标识信息：IP地址（粗略的位置信息）、日志信息**
   - 隐私政策链接：https://terms.alicdn.com/legal-agreement/terms/privacy_policy_full/20240202100310511/20240202100310511.html
 
 ## 三、我们如何存储个人信息
