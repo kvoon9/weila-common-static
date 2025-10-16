@@ -1,5 +1,4 @@
 import vue from '@astrojs/vue'
-import Legacy from '@vitejs/plugin-legacy'
 // @ts-check
 import { defineConfig } from 'astro/config'
 
@@ -36,11 +35,5 @@ export default defineConfig({
         },
       },
     },
-    plugins: [
-      Legacy({
-        targets: ['last 2 versions and not dead, > 0.3%, Firefox ESR'],
-        modernPolyfills: true,
-      }),
-    ],
   },
 })
