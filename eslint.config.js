@@ -10,4 +10,4 @@ export default antfu({
   rules: {
     'antfu/no-top-level-await': 'off',
   },
-}, globalIgnores(['helpdoc/**/*', '**/vender/**/*']))
+}, globalIgnores(['**/helpdoc/**/*', '**/vender/**/*']))

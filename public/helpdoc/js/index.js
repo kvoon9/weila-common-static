@@ -98,19 +98,19 @@ if (verint) {
 if (brand && androidVer) {
     if (androidVer !== 'F') {
         if (brand !== 'OTHER') {
-            step1Url = "/pages/" + brand + "/" + brand + "_" + androidVer + "_step1.html";
+            step1Url = "./pages/" + brand + "/" + brand + "_" + androidVer + "_step1.html";
             if (brand === 'SAMSUNG' || brand === 'MEIZU') {
-                step2Url = "/pages/" + brand + "/" + brand + "_step2.html";
+                step2Url = "./pages/" + brand + "/" + brand + "_step2.html";
             }else {
-                step2Url = "/pages/" + brand + "/" + brand + "_" + androidVer + "_step2.html";
+                step2Url = "./pages/" + brand + "/" + brand + "_" + androidVer + "_step2.html";
             }
         }else {
-            step1Url = "/pages/" + brand + "/" + brand + "_" + androidVer + "_step1.html";
-            step2Url = "/pages/" + brand + "/" + brand + "_" + "default_step2.html";
+            step1Url = "./pages/" + brand + "/" + brand + "_" + androidVer + "_step1.html";
+            step2Url = "./pages/" + brand + "/" + brand + "_" + "default_step2.html";
         }
     }else {
-        step1Url = "/pages/OTHER/OTHER_10_step1.html";
-        step2Url = "/pages/OTHER/OTHER_default_step2.html";
+        step1Url = "./pages/OTHER/OTHER_10_step1.html";
+        step2Url = "./pages/OTHER/OTHER_default_step2.html";
     }
 }else {
     step1Url = "none_step1.html";
