@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import PageTree from './PageTree.vue'
-import {base} from '../../astro.config'
 
 interface PageItem {
   type: 'page'
@@ -38,7 +37,46 @@ function toggleFolder(event: Event) {
 function getItemCount(tree: TreeStructure): number {
   return Object.keys(tree).length
 }
+
+const base = import.meta.env.BASE_URL
 </script>
+
+
+<template>
+  <div class="tree-item">
+    <!-- 页面项 -->
+    <div v-if="item.type === 'page'" class="page-item">
+      <a
+        :href="`${base}/${item.path}`"
+        class="page-link"
+      >
+        <span class="page-icon">📄</span>
+        {{ name }} {{ `${base}/${item.path}` }}
+      </a>
+    </div>
+
+    <!-- 文件夹项 -->
+    <div v-else-if="item.type === 'folder'" class="folder-item">
+      <details :open="isOpen" class="folder-details">
+        <summary class="folder-summary" @click="toggleFolder">
+          <span class="folder-icon">
+            {{ isOpen ? '📂' : '📁' }}
+          </span>
+          <span class="folder-name">{{ name }}</span>
+          <span class="folder-count">
+            ({{ getItemCount(item.children) }})
+          </span>
+        </summary>
+        <div class="folder-content">
+          <PageTree
+            :tree="item.children"
+            :path="currentPath"
+          />
+        </div>
+      </details>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .tree-item {
@@ -90,39 +128,3 @@ function getItemCount(tree: TreeStructure): number {
   @apply ml-6 border-l-2 border-gray-200 pl-4 my-1;
 }
 </style>
-
-<template>
-  <div class="tree-item">
-    <!-- 页面项 -->
-    <div v-if="item.type === 'page'" class="page-item">
-      <a
-        :href="`${base}/${item.path}`"
-        class="page-link"
-      >
-        <span class="page-icon">📄</span>
-        {{ name }} {{ `${base}/${item.path}` }}
-      </a>
-    </div>
-
-    <!-- 文件夹项 -->
-    <div v-else-if="item.type === 'folder'" class="folder-item">
-      <details :open="isOpen" class="folder-details">
-        <summary class="folder-summary" @click="toggleFolder">
-          <span class="folder-icon">
-            {{ isOpen ? '📂' : '📁' }}
-          </span>
-          <span class="folder-name">{{ name }}</span>
-          <span class="folder-count">
-            ({{ getItemCount(item.children) }})
-          </span>
-        </summary>
-        <div class="folder-content">
-          <PageTree
-            :tree="item.children"
-            :path="currentPath"
-          />
-        </div>
-      </details>
-    </div>
-  </div>
-</template>
