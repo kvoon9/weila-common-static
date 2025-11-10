@@ -1,4 +1,5 @@
 import antfu from '@antfu/eslint-config'
+import { globalIgnores } from 'eslint/config'
 
 export default antfu({
   formatters: true,
@@ -9,5 +10,4 @@ export default antfu({
   rules: {
     'antfu/no-top-level-await': 'off',
   },
-  ignores: ['**/vender/**/*'],
-})
+}, globalIgnores(['helpdoc/**/*', '**/vender/**/*']))

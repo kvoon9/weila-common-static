@@ -1,0 +1,35 @@
+html, body {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+  max-width: 100vw;
+  overflow: auto;
+}
+
+.divider {
+    width: 100%;
+    height: 6px;
+    background: #999;
+}
+
+.text {
+    margin-top: 10px;
+}
+
+.img {
+    text-align: center;
+}
+
+.img img {
+    max-width: 95%;
+    height: auto;
+}
+
+.titlestr {
+    text-align: center;
+    background-color: blue;
+    color: aliceblue;
+}
