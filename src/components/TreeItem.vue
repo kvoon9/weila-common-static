@@ -100,7 +100,7 @@ function getItemCount(tree: TreeStructure): number {
         class="page-link"
       >
         <span class="page-icon">📄</span>
-        {{ name }}
+        {{ name }} {{ `${base}/${item.path}` }}
       </a>
     </div>
 

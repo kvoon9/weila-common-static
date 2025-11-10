@@ -35,7 +35,7 @@ jobs:
 
       - name: Create archive
         run: nr archive
-      
+
       - run: npx changelogithub --assets pkg/*.tar.gz
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

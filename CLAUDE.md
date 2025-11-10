@@ -17,10 +17,11 @@ This is an **Astro** static site generator project with **Vue 3** components and
 
 - App download pages with QR codes
 - Privacy policy documents (Markdown)
-- Service agreements (Markdown) 
+- Service agreements (Markdown)
 - License PDF generation and preview
 
 ### Key Technologies
+
 - **Astro 5.x** - Static site generator
 - **Vue 3** - Component framework via `@astrojs/vue`
 - **UnoCSS** - Atomic CSS framework with custom presets
@@ -28,6 +29,7 @@ This is an **Astro** static site generator project with **Vue 3** components and
 - **TypeScript** - Type safety with Astro's strict config
 
 ### Project Structure
+
 - `src/pages/` - Astro pages and Markdown content
 - `src/components/` - Vue components (PDF previewer, QR generator)
 - `src/layouts/` - Astro layout components
@@ -35,17 +37,20 @@ This is an **Astro** static site generator project with **Vue 3** components and
 - `src/vender/` - Vendor files (excluded from linting)
 
 ### Important Files
+
 - `astro.config.ts` - Astro configuration with Vue integration and proxy setup
 - `uno.config.ts` - UnoCSS configuration with custom shortcuts and presets
 - `eslint.config.js` - ESLint configuration using Antfu's preset
 - `scripts/zip.ts` - Build packaging script using zx
 
 ### Deployment
+
 - Site is configured with base path `/common`
 - Production site URL: `https://demoui.weila.hk/common`
 - Development proxy setup for `/v1` and `/v2` API endpoints
 
 ### Notable Features
+
 - PDF generation and preview capabilities
 - QR code generation for app downloads
 - Markdown content rendering
