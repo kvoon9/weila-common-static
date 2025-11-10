@@ -4,10 +4,12 @@ import { defineConfig } from 'astro/config'
 
 import UnoCSS from 'unocss/astro'
 
+export const base = '/common'
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://demoui.weila.hk',
-  base: '/common',
+  base,
   integrations: [
     UnoCSS({
       injectReset: true,

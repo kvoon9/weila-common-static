@@ -1,0 +1,78 @@
+---
+// 导入 Vue 组件
+import PageTree from '../components/PageTree.vue'
+
+// 使用 Vite glob API 获取所有页面
+const pageGlob = import.meta.glob(['./**/*.astro', './**/*.md'], {
+  eager: false,
+  query: '?url',
+})
+
+// 定义类型
+interface PageItem {
+  type: 'page'
+  path: string
+}
+
+interface FolderItem {
+  type: 'folder'
+  children: TreeStructure
+}
+
+type TreeStructure = Record<string, PageItem | FolderItem>
+
+// 构建页面树结构
+function buildPageTree(): TreeStructure {
+  const tree: TreeStructure = {}
+
+  // 处理 glob 结果
+  for (const [path] of Object.entries(pageGlob)) {
+    // 移除开头的 ./ 和文件扩展名
+    const cleanPath = path.replace(/^\.\//, '').replace(/\.(astro|md)$/, '')
+
+    // 跳过 index 页面本身
+    if (cleanPath === 'index') continue
+
+    // 构建树结构
+    const parts = cleanPath.split('/')
+    let currentLevel: TreeStructure = tree
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i]
+      const isLeaf = i === parts.length - 1
+
+      if (!currentLevel[part]) {
+        currentLevel[part] = isLeaf ? { type: 'page', path: cleanPath } : { type: 'folder', children: {} }
+      }
+
+      if (!isLeaf) {
+        currentLevel = (currentLevel[part] as FolderItem).children
+      }
+    }
+  }
+
+  return tree
+}
+
+const pageTree = buildPageTree()
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weila Static - Page Tree</title>
+  </head>
+  <body class="p-5 bg-gray-50 font-sans">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
+      <div class="text-center mb-8 pb-4 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Weila Static</h1>
+        <p class="text-gray-600 m-0">页面导航树 - Auto Generated</p>
+      </div>
+
+      <div class="tree-container">
+        <PageTree tree={pageTree} />
+      </div>
+    </div>
+  </body>
+</html>
