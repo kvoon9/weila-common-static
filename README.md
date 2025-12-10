@@ -19,6 +19,7 @@ Push 版本后，将会在 [Release](https://github.com/kvoon9/weila-common-stat
 │   │   ├── ios/         # iOS 平台相关页面
 │   │   ├── android/     # Android 平台相关页面
 │   │   ├── web/         # Web 平台相关页面
+│   │   ├── intl/        # 国际化页面
 │   │
 │   │   ├── corp/        # 将弃用，请使用 ios/corp 目录
 │   │   ├── corp-web/    # 将弃用，请使用 web/corp 目录
