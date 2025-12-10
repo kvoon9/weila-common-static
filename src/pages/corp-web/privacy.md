@@ -1,4 +1,5 @@
 ---
+# !NOTE: 该文档将会在未来的版本中被删除，请使用 /pages/web/corp/privacy.md 文件
 layout: '~/layouts/Typo.astro'
 ---
 

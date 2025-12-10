@@ -1,56 +1,76 @@
 # Weila Static Content
 
+本项目用于存储和展示微喇公共静态内容，包括 iOS、Android、Web 平台的隐私政策、许可证、个人版隐私政策等。
+
+Push 版本后，将会在 [Release](https://github.com/kvoon9/weila-common-static/releases) 上发布 Release 版本，并在 Vercel 上部署
+
+## 部署环境
+
+- [Vercel 部署环境](https://weila-static-content.vercel.app)
+- [VoisWork cn 国内部署环境](https://voiswork.cn/common)
+- [VoisWork com 海外部署环境](https://voiswork.com/common)
+
+## 目录结构
+
 ```text
 /
 ├── src/
-│   ├── pages/           # 页面和路由
+│   ├── pages/           # 项目文档
 │   │   ├── ios/         # iOS 平台相关页面
 │   │   ├── android/     # Android 平台相关页面
 │   │   ├── web/         # Web 平台相关页面
+│   │
+│   │   ├── corp/        # 将弃用，请使用 ios/corp 目录
+│   │   ├── corp-web/    # 将弃用，请使用 web/corp 目录
 │   │   └── *.astro      # 通用页面
+│   │
 │   ├── components/      # Vue 组件
 │   ├── layouts/         # Astro 布局组件
 │   └── shared/          # 共享常量和工具
 └── package.json
 ```
 
-## 📱 部署路由
+## 如何提交代码？
 
-### iOS 路由
+### 通过 GitHub Web 界面快速编辑
 
-- **企业版隐私政策**
-  - 预览环境: `https://weila-static-content.vercel.app/common/ios/corp/privacy`
-  - 生产环境: `http://static.voischat.cn/common/ios/corp/privacy`
-- **企业版许可证**
-  - 预览环境: `https://weila-static-content.vercel.app/common/ios/corp/license`
-  - 生产环境: `http://static.voischat.cn/common/ios/corp/license`
-- **个人版隐私政策**
-  - 预览环境: `https://weila-static-content.vercel.app/common/ios/personal/privacy`
-  - 生产环境: `http://static.voischat.cn/common/ios/personal/privacy`
+如果需要修改 Markdown 文档或简单文件，可以直接在 GitHub 上编辑：
 
-### Android 路由
+1. **找到要编辑的文件**
+   - 在 GitHub 仓库页面浏览到目标文件
+   - 点击文件右上角的铅笔图标 ✏️ (Edit this file)
 
-- **企业版隐私政策**
-  - 预览环境: `https://weila-static-content.vercel.app/common/android/corp/privacy`
-  - 生产环境: `http://static.voischat.cn/common/android/corp/privacy`
-- **企业版服务协议**
-  - 预览环境: `https://weila-static-content.vercel.app/common/android/corp/service`
-  - 生产环境: `http://static.voischat.cn/common/android/corp/service`
-- **个人版隐私政策**
-  - 预览环境: `https://weila-static-content.vercel.app/common/android/personal/privacy`
-  - 生产环境: `http://static.voischat.cn/common/android/personal/privacy`
-- **个人版许可证**
-  - 预览环境: `https://weila-static-content.vercel.app/common/android/personal/license`
-  - 生产环境: `http://static.voischat.cn/common/android/personal/license`
+2. **进行编辑**
+   - 在 Web 编辑器中修改内容
+   - GitHub 会自动预览 Markdown 渲染效果
 
-### Web 路由
+3. **提交更改**
+   - 在提交信息框中填写清晰的描述
+   - 选择 "Create a new branch for this commit and start a pull request"
+   - 点击 "Propose changes"
 
-- **Web 企业版隐私政策**
-  - 预览环境: `https://weila-static-content.vercel.app/common/web/corp/privacy`
-  - 生产环境: `http://static.voischat.cn/common/web/corp/privacy`
+4. **创建 Pull Request**
+   - GitHub 会自动跳转到 PR 创建页面
+   - 填写 PR 标题和描述
+   - 点击 "Create pull request"
 
-### 其他
+### 代码审查流程
 
-- **应用下载页面**
-  - 预览环境: `https://weila-static-content.vercel.app/common/app-download`
-  - 生产环境: `http://static.voischat.cn/common/app-download`
+1. **自动检查**
+   - CI 会自动运行 lint 和构建检查
+   - 确保所有检查通过
+
+2. **人工审查**
+   - 至少需要一位维护者批准
+   - 根据反馈进行修改
+
+3. **合并**
+   - 维护者 squash merge 到主分支
+   - 删除功能分支
+
+### 注意事项
+
+- 修改 Markdown 文件时，确保语法正确
+- 更新文档时，同步更新相关链接
+- 添加新页面时，更新目录结构说明
+- 遵循现有代码风格和约定
