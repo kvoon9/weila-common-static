@@ -1,6 +1,6 @@
 # Weila Static Content
 
-[本项目](https://github.com/kvoon9/weila-common-static)用于存储和展示微喇公共静态内容，包括 iOS、Android、Web 平台的隐私政策、许可证、个人版隐私政策等。
+[本项目](https://github.com/kvoon9/weila-common-static)用于存储和展示[微喇公共静态内容](https://github.com/kvoon9/weila-common-static/tree/main/src/pages)，包括 iOS、Android、Web 平台的隐私政策、许可证、个人版隐私政策等。
 
 Push 版本后，将会在 [Release](https://github.com/kvoon9/weila-common-static/releases) 上发布 Release 版本，并在 Vercel 上部署
 
@@ -34,7 +34,7 @@ Push 版本后，将会在 [Release](https://github.com/kvoon9/weila-common-stat
 
 ### 通过 GitHub Web 界面快速编辑
 
-如果需要修改 Markdown 文档或简单文件，可以直接在 GitHub 上编辑：
+Markdown 文档或简单文件，可以直接在 GitHub 上编辑：
 
 1. **找到要编辑的文件**
    - 在 GitHub 仓库页面浏览到目标文件
