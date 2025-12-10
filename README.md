@@ -1,6 +1,6 @@
 # Weila Static Content
 
-本项目用于存储和展示微喇公共静态内容，包括 iOS、Android、Web 平台的隐私政策、许可证、个人版隐私政策等。
+[本项目](https://github.com/kvoon9/weila-common-static)用于存储和展示微喇公共静态内容，包括 iOS、Android、Web 平台的隐私政策、许可证、个人版隐私政策等。
 
 Push 版本后，将会在 [Release](https://github.com/kvoon9/weila-common-static/releases) 上发布 Release 版本，并在 Vercel 上部署
 
