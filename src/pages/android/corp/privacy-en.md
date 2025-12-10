@@ -10,7 +10,7 @@ navigation:
 - Updated: July 17, 2023
 - Effective: July 17, 2023
 
-Thank you for trusting and using the Weila Enterprise Edition ("this App") developed by Shenzhen Voit Industrial Co., Ltd\. ("Weila" or "we")\. We take your privacy seriously\. This App will use and disclose your personal information in accordance with this Privacy Policy, treating such information with the utmost diligence and prudence\. Unless otherwise specified herein, we will not disclose or provide your information to third parties without your prior consent\. This Privacy Policy may be updated periodically\. By agreeing to our Terms of Service, you are deemed to have accepted all provisions of this Privacy Policy, which forms an integral part of our Terms of Service\. If you have any questions, comments, or suggestions regarding this policy, please contact us using the information provided at the end of this document.
+Thank you for trusting and using the VoisWork ("this App") developed by Shenzhen Voit Industrial Co., Ltd\. ("VoisWork" or "we")\. We take your privacy seriously\. This App will use and disclose your personal information in accordance with this Privacy Policy, treating such information with the utmost diligence and prudence\. Unless otherwise specified herein, we will not disclose or provide your information to third parties without your prior consent\. This Privacy Policy may be updated periodically\. By agreeing to our Terms of Service, you are deemed to have accepted all provisions of this Privacy Policy, which forms an integral part of our Terms of Service\. If you have any questions, comments, or suggestions regarding this policy, please contact us using the information provided at the end of this document.
 
 This policy will help you understand:
 
@@ -43,7 +43,7 @@ We collect personal information to provide services and ensure compliance with a
 
 1   Device Optimization: We may collect device information (serial number/IMEI/OAID/UUID/Android ID/SIM IMSI), hardware model, MAC address, installed apps, and software versions to optimize display and functionality.
 
-2   Account Creation: We collect your phone number and SMS verification code for identity authentication\. Without these, registration will fail.
+2   Account Creation: We collect your email number and SMS verification code for identity authentication\. Without these, registration will fail.
 
 3   Service Permissions: Enabling these permissions authorizes us to collect corresponding data\. Disabling them will affect related services:
 
@@ -95,8 +95,8 @@ Under the following circumstances, this App will disclose your personal informat
 
 6\. How to Delete Your Account
 
-As a communication and management tool for enterprise users, the creation and deletion of employee accounts are managed by your organization's administrator\. If you wish to delete your account, please contact your administrator, who can log in to the Weila Enterprise Management System via computer to complete the account deletion process.
-Weila Enterprise Management System URL: https://www.voiswork.com/
+As a communication and management tool for enterprise users, the creation and deletion of employee accounts are managed by your organization's administrator\. If you wish to delete your account, please contact your administrator, who can log in to the VoisWork Enterprise Management System via computer to complete the account deletion process.
+VoisWork Enterprise Management System URL: https://www.voiswork.com/
 Operation path: Contacts → Member Management → Actions → Delete Member
 
 Upon receiving the administrator's deletion request, we will process the account deletion based on their authorization\. Please note that account deletion is irreversible\. We will cease providing services to you, stop collecting your personal information, and delete or anonymize your account-related data upon request, unless otherwise required by laws, regulations, or regulatory authorities.

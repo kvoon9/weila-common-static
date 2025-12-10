@@ -77,7 +77,7 @@ The services refer to the cross-platform communication tool provided by VoisWork
 
 **6.1 Protecting user personal information is a fundamental principle of VoisWork. VoisWork will take reasonable measures to protect users' personal information. Except as required by laws and regulations, VoisWork will not disclose user personal information to third parties without user consent. VoisWork employs professional encryption for storage and transmission to ensure the security of user personal information.**
 
-**6.2 During account registration or use of the services, you may need to provide certain necessary information, such as: mobile phone number for account registration or user identification; agreement to use your geographic location information for the "People Nearby" feature; real identity information where required by laws or regulations. Incomplete information may restrict your ability to use the services.**
+**6.2 During account registration or use of the services, you may need to provide certain necessary information, such as: mobile email number for account registration or user identification; agreement to use your geographic location information for the "People Nearby" feature; real identity information where required by laws or regulations. Incomplete information may restrict your ability to use the services.**
 
 **6.3 Generally, you may review and modify your submitted information at any time. However, for security and identification purposes (e.g., account recovery), you may not be able to modify initial registration information or other verification details.**
 
@@ -91,7 +91,7 @@ The services refer to the cross-platform communication tool provided by VoisWork
 
 **7.1 Account Usage Rules**
 
-**7.1.1 To use the services, you need to register a VoisWork account, which can be created using a mobile phone number. VoisWork reserves the right to modify account registration and binding methods based on user needs or product requirements. Specific rules for account usage shall comply with relevant account agreements and VoisWork's special rules.**
+**7.1.1 To use the services, you need to register a VoisWork account, which can be created using a mobile email number. VoisWork reserves the right to modify account registration and binding methods based on user needs or product requirements. Specific rules for account usage shall comply with relevant account agreements and VoisWork's special rules.**
 
 **7.1.2 Ownership of VoisWork accounts belongs to VoisWork. Upon completing registration, users obtain only the right to use the account, which is limited to the original registrant. The original registrant may not transfer, lend, lease, sell, or otherwise permit non-original registrants to use the account. Non-original registrants may not obtain account usage rights through gift, inheritance, lease, transfer, or any other means.**
 
