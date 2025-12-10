@@ -8,6 +8,7 @@ export const base = '/common'
 
 // https://astro.build/config
 export default defineConfig({
+  // NOTE: not working now
   site: 'https://demoui.weila.hk',
   base,
   integrations: [

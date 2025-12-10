@@ -1,5 +1,9 @@
 ---
+import NavigationDropdown from '~/components/NavigationDropdown.vue'
 import 'github-markdown-css/github-markdown.css'
+
+const { frontmatter } = Astro.props
+const navigation = frontmatter?.navigation
 ---
 
 <!doctype html>
@@ -13,7 +17,10 @@ import 'github-markdown-css/github-markdown.css'
     <title>Astro Basics</title>
   </head>
   <body class="markdown-body">
-    <main class="container mxa p8">
+    <!-- 只在有 navigation 数据时显示下拉按钮 -->
+    {navigation && <NavigationDropdown navigation={navigation} client:load />}
+
+    <main class="mxa p8 container">
       <slot />
     </main>
   </body>

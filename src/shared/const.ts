@@ -16,3 +16,10 @@ export const appkey = computed(() => {
 ? 'b3c658bd2e637c65efb134fb381d4a18'
 : '3c227f2cbc2084ebdd9617fd283c42c7'
 })
+
+export interface NavigationItem {
+  name: string
+  url: string
+}
+
+export type NavigationList = NavigationItem[]
