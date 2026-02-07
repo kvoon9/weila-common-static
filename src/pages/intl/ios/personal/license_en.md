@@ -88,7 +88,7 @@ The services provided by VoisChat include a cross-platform communication tool (h
 
 **7.1 Account Usage Rules**
 
-**7.1.1 To use the Services, you need to register a VoisChat account. A VoisChat account can be registered using a mobile Email number. VoisChat reserves the right to modify the account registration and binding methods based on user needs or product requirements. For specific rules regarding account usage, please comply with the relevant account usage agreement and any special rules issued by VoisChat.**
+**7.1.1 To use the Services, you need to register a VoisChat account. A VoisChat account can be registered using a mobile Email number [in the App](https://www.VoisChat.com). VoisChat reserves the right to modify the account registration and binding methods based on user needs or product requirements. For specific rules regarding account usage, please comply with the relevant account usage agreement and any special rules issued by VoisChat.**
 
 **7.1.2 Ownership of VoisChat accounts belongs to VoisChat. After completing the registration process, users only obtain the right to use the account, and this right belongs solely to the initial registrant. The initial registrant may not gift, lend, lease, transfer, or sell the account or otherwise permit non-initial registrants to use it. Non-initial registrants may not use the account through gifting, inheritance, leasing, transfer, or any other means.**
 
