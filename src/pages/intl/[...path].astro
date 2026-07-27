@@ -1,0 +1,42 @@
+---
+// 为 intl 下的多语言文档生成「裸路径」入口页。
+// 例如存在 license_zh-CN.md / license_en.md 时，生成 /intl/.../license，
+// 按 ?lang= 参数（默认 zh-CN）跳转到对应语言后缀的页面。
+export function getStaticPaths() {
+  const docs = new Map<string, string[]>()
+
+  for (const key of Object.keys(import.meta.glob('./**/*.md'))) {
+    const match = key.match(/^\.\/(.+)_(zh-CN|zh-TW|en)\.md$/)
+    if (!match)
+continue
+    const [, docPath, lang] = match
+    docs.set(docPath, [...(docs.get(docPath) ?? []), lang])
+  }
+
+  return [...docs.entries()].map(([docPath, langs]) => ({
+    params: { path: docPath },
+    props: { langs },
+  }))
+}
+
+const { langs } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    <script define:vars={{ langs }}>
+      const requested = new URLSearchParams(location.search).get('lang')
+      const lang = requested && langs.includes(requested)
+        ? requested
+        : (langs.includes('zh-CN') ? 'zh-CN' : langs[0])
+      const pathname = location.pathname.replace(/\/$/, '')
+      location.replace(`${pathname}_${lang}${location.search}${location.hash}`)
+    </script>
+  </body>
+</html>

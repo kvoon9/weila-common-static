@@ -2,7 +2,9 @@
 layout: '~/layouts/Typo.astro'
 navigation:
   - name: "软件许可及服务协议 (中文)"
-    url: "/intl/android/personal/service_zh-CN"
+    url: "/intl/android-next/personal/service_zh-CN"
+  - name: "軟件許可及服務協議 (繁體中文)"
+    url: "/intl/android-next/personal/service_zh-TW"
 ---
 
 # VoisChat Software License and Service Agreement

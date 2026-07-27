@@ -16,6 +16,21 @@ const title = frontmatter?.title || headings?.find(h => h.depth === 1)?.text || 
     <meta name="generator" content={Astro.generator} />
     <meta charset="utf-8" />
     <title>{title}</title>
+    <!-- ?lang= 与页面语言后缀不一致时跳转到对应语言页（license_en?lang=zh-CN → license_zh-CN） -->
+    <script is:inline>
+      const requestedLang = new URLSearchParams(location.search).get('lang')
+      if (requestedLang === 'en' || requestedLang === 'zh-CN' || requestedLang === 'zh-TW') {
+        const pathname = location.pathname.replace(/\/$/, '')
+        const match = pathname.match(/_(zh-CN|zh-TW|en)$/)
+        if (match && match[1] !== requestedLang) {
+          location.replace(
+            pathname.replace(/_(zh-CN|zh-TW|en)$/, `_${requestedLang}`)
+            + location.search
+            + location.hash,
+          )
+        }
+      }
+    </script>
   </head>
   <body class="markdown-body">
     <!-- 只在有 navigation 数据时显示下拉按钮 -->

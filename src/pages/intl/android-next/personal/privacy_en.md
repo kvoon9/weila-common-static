@@ -2,7 +2,9 @@
 layout: '~/layouts/Typo.astro'
 navigation:
   - name: "隐私政策 (中文)"
-    url: "/intl/android/personal/privacy_zh-CN"
+    url: "/intl/android-next/personal/privacy_zh-CN"
+  - name: "隱私政策 (繁體中文)"
+    url: "/intl/android-next/personal/privacy_zh-TW"
 ---
 
 # VoisChat Privacy Policy

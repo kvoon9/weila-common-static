@@ -1,8 +1,10 @@
 ---
 layout: '~/layouts/Typo.astro'
 navigation:
+  - name: "隱私政策 (繁體中文)"
+    url: "/intl/ios-next/personal/privacy_zh-TW"
   - name: "Privacy Policy (English)"
-    url: "/intl/ios/personal/privacy_en"
+    url: "/intl/ios-next/personal/privacy_en"
 ---
 
 # 隐私政策
