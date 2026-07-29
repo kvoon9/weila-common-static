@@ -80,17 +80,7 @@ layout: '~/layouts/Typo.astro'
 
 ## 6.所集成的第三方SDK
 
-(a)为了实现短信验证功能，我们的产品使用了MobTech的SMSSDK，此产品需要收集您的设备SDK版本、设备固件信息、系统信息、应用包名及版本、应用前后置信息用来做兼容处理，需要收集您的设备应用列表信息、电池使用情况生成可信唯一ID，需要收集您设备>的基站信息检测不同区域服务，需要收集您的个人敏感信息手机号码完成短信验证功能。此产品的隐私策略条款请参考：http://www.mob.com/about/policy
-
-(b)为了实现分享功能，我们的产品集成友盟+SDK，友盟+SDK需要收集您的设备Mac地址、唯一设备识别码（IMEI/手机ID/IDFA/OPENUDID/GUID、SIM 卡 IMSI 信息）以提供统计分析服务和向目标设备分享消息，并通过地理位置校准报表数据准确性，提供基础反作弊能力。此产品的隐私策略条款请参考 https://www.umeng.com/page/policy
-
-(c)为了实现定位、地图导航等目的，我们的产品集成高德SDK，高德SDK需要您打开设备位置权限并收集设备所在位置相关信息、设备识别号、联网相关信息。 此产品的隐私策略条款请参考https://map.amap.com/doc/serviceitem.html
-
-(d)为了实现在线升级和崩溃日志收集，我们的产品集成了腾讯Bugly, Bugly需要收集网络设备硬件地址、唯一设备识别码、设备信息、网络信息。此产品的隐私策略条款请参考https://bugly.qq.com/v2/contract
-
-(e)为向您提供智能客服、语音指令功能，我们集成了百度语音识别SDK。百度语音识别SDK需要访问网络、获取网络状态、访问Wi-Fi状态权限，并会收集设备信息，日志信息。此产品的隐私策略条款请参考https://ai.baidu.com/ai-doc/REFERENCE/Qkdykq1r3
-
-(f)为向您提供头像、文件消息、语音消息存储功能，我们集成了阿里对象存储OSS SDK。该产品需要访问网络、磁盘存储权限。此产品的隐私策略条款请参考http://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201902141711_54837.html?spm=a2c4g.11186623.0.0.3fc85ff2WPlDw6
+(a)为向您提供头像、文件消息、语音消息存储功能，我们集成了阿里对象存储OSS SDK。该产品需要访问网络、磁盘存储权限。此产品的隐私策略条款请参考http://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201902141711_54837.html?spm=a2c4g.11186623.0.0.3fc85ff2WPlDw6
 
 ## 7.账号注销
 
