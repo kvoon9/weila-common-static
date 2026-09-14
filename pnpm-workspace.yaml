@@ -1,0 +1,14 @@
+minimumReleaseAgeExcludePrune: true
+
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # 官方包（npm CLI 团队签名），仅因发布早于 attestation 时代而被 no-downgrade 误报
+  - semver@6.3.1
+
+shellEmulator: true
+
+allowBuilds:
+  # 仅 postinstall 广告，无需执行
+  core-js: false
+  # vite / astro 构建链必需
+  esbuild: true
