@@ -31,7 +31,8 @@ function buildPageTree(): TreeStructure {
     const cleanPath = path.replace(/^\.\//, '').replace(/\.(astro|md)$/, '')
 
     // 跳过 index 页面本身
-    if (cleanPath === 'index') continue
+    if (cleanPath === 'index')
+      continue
 
     // 构建树结构
     const parts = cleanPath.split('/')
@@ -63,10 +64,10 @@ const pageTree = buildPageTree()
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Weila Static</title>
   </head>
-  <body class="p-5 bg-gray-50 font-sans">
-    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
-      <div class="text-center mb-8 pb-4 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">Weila Static</h1>
+  <body class="font-sans p-5 bg-gray-50">
+    <div class="mx-auto p-6 rounded-lg bg-white max-w-4xl shadow-sm">
+      <div class="mb-8 pb-4 text-center border-b border-gray-200">
+        <h1 class="text-2xl text-gray-800 font-bold mb-2">Weila Static</h1>
         <p class="text-gray-600 m-0">页面导航树 - Auto Generated</p>
       </div>
 

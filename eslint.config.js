@@ -7,6 +7,9 @@ export default antfu({
   astro: true,
   vue: false,
 }, {
+  files: ['**/*.md'],
+  languageOptions: { frontmatter: 'yaml' },
+}, {
   rules: {
     'antfu/no-top-level-await': 'off',
   },
