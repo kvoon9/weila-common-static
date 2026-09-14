@@ -7,8 +7,9 @@ Push 版本后，将会在 [Release](https://github.com/kvoon9/weila-common-stat
 ## 部署环境
 
 - [Vercel 部署环境](https://weila-static-content.vercel.app)
-- [VoisWork cn 国内部署环境](https://voiswork.cn/common)
-- [VoisWork com 海外部署环境](https://voiswork.com/common)
+- [VoisWork CN 国内部署环境](https://voiswork.cn/common)
+- [VoisWork 海外部署环境](https://voiswork.com/common)
+- [VoisChat CN](https://api.voischat.cn/common/)
 
 ## 目录结构
 
