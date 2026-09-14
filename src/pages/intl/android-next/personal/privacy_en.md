@@ -66,7 +66,7 @@ We collect personal information to provide services and ensure compliance with a
 
 **d) Bluetooth** You can use Bluetooth functionality with our Bluetooth devices for better communication services.
 
-**e) Auto-start** To help you receive communication messages more promptly, our product provides an auto-start function. You can disable this feature in Settings -> General.
+**e) Auto-start** To help you receive communication messages more promptly, our product provides an auto-start function. You can disable this feature in Profile -> Settings.
 
 To better serve you, we use third-party SDKs that require certain permissions:
 
