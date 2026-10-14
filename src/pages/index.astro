@@ -8,6 +8,13 @@ const pageGlob = import.meta.glob(['./**/*.astro', './**/*.md'], {
   query: '?url',
 })
 
+// intl 多语言文档位于 src/content/intl（由 src/pages/intl/[...path].astro 统一渲染），
+// 同一篇文档的多个语言后缀文件归并为一个裸路径入口
+const intlGlob = import.meta.glob('../content/intl/**/*.md', {
+  eager: false,
+  query: '?url',
+})
+
 // 定义类型
 interface PageItem {
   type: 'page'
@@ -25,16 +32,7 @@ type TreeStructure = Record<string, PageItem | FolderItem>
 function buildPageTree(): TreeStructure {
   const tree: TreeStructure = {}
 
-  // 处理 glob 结果
-  for (const [path] of Object.entries(pageGlob)) {
-    // 移除开头的 ./ 和文件扩展名
-    const cleanPath = path.replace(/^\.\//, '').replace(/\.(astro|md)$/, '')
-
-    // 跳过 index 页面本身
-    if (cleanPath === 'index')
-      continue
-
-    // 构建树结构
+  function insertPath(cleanPath: string) {
     const parts = cleanPath.split('/')
     let currentLevel: TreeStructure = tree
 
@@ -51,6 +49,30 @@ function buildPageTree(): TreeStructure {
       }
     }
   }
+
+  // 处理 glob 结果
+  for (const [path] of Object.entries(pageGlob)) {
+    // 移除开头的 ./ 和文件扩展名
+    const cleanPath = path.replace(/^\.\//, '').replace(/\.(astro|md)$/, '')
+
+    // 跳过 index 页面本身
+    if (cleanPath === 'index')
+      continue
+
+    insertPath(cleanPath)
+  }
+
+  // intl 文档:剥掉语言后缀后去重,插入裸路径(如 intl/ios/personal/license)
+  const intlPaths = new Set<string>()
+  for (const [path] of Object.entries(intlGlob)) {
+    const cleanPath = path
+      .replace(/^\.\.\//, '')
+      .replace(/^content\//, '')
+      .replace(/_(zh-CN|zh-TW|en)\.md$/, '')
+    intlPaths.add(cleanPath)
+  }
+  for (const cleanPath of intlPaths)
+    insertPath(cleanPath)
 
   return tree
 }

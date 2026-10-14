@@ -1,42 +1,341 @@
 ---
-// 为 intl 下的多语言文档生成「裸路径」入口页。
-// 例如存在 license_zh-CN.md / license_en.md 时，生成 /intl/.../license，
-// 按 ?lang= 参数（默认 zh-CN）跳转到对应语言后缀的页面。
-export function getStaticPaths() {
-  const docs = new Map<string, string[]>()
+// intl 多语言文档的统一入口页。
+//
+// URL 规范:干净的裸路径(/common/intl/ios/personal/license),不携带语言信息。
+// 语言解析优先级(客户端,构建后生效):
+//   1. ?lang= 显式覆盖(仅兼容旧链接,新链接不要再携带)
+//   2. 旧版语言后缀路径(license_zh-CN,自动强制该语言并规范化 URL 为裸路径)
+//   3. App WebView bridge:get-page-params → data.lang(参考 vois-app-webview-next)
+//   4. navigator.language 兜底(浏览器场景)
+//   5. 以上都失败 → zh-CN
+//
+// md 源文件位于 src/content/intl/(不再直接生成页面),构建期内嵌全部语言版本,
+// 由内联脚本切换显示;无 JS 环境下默认展示 zh-CN(渐进增强)。
+import { getIntlDocs } from './docs'
+import 'github-markdown-css/github-markdown.css'
 
-  for (const key of Object.keys(import.meta.glob('./**/*.md'))) {
-    const match = key.match(/^\.\/(.+)_(zh-CN|zh-TW|en)\.md$/)
-    if (!match)
-continue
-    const [, docPath, lang] = match
-    docs.set(docPath, [...(docs.get(docPath) ?? []), lang])
-  }
-
-  return [...docs.entries()].map(([docPath, langs]) => ({
-    params: { path: docPath },
-    props: { langs },
-  }))
+// 语言展示顺序与切换器文案;新增语言时同步维护这里与 normalizeLang
+const LANG_LABELS: Record<string, string> = {
+  'zh-CN': '简体中文',
+  'zh-TW': '繁體中文',
+  'en': 'English',
 }
 
-const { langs } = Astro.props
+// 每篇文档同时生成:干净裸路径 + 旧版语言后缀路径(兼容已发布 App 内的旧链接)
+export function getStaticPaths() {
+  const docs = getIntlDocs()
+  return [...docs.entries()].flatMap(([docPath, doc]) => [
+    { params: { path: docPath } },
+    ...doc.langs.map(lang => ({ params: { path: `${docPath}_${lang}` } })),
+  ])
+}
+
+// 读取全部文档供渲染(当前路由可能是裸路径或旧版后缀路径,统一剥掉后缀得到文档路径)
+const docs = getIntlDocs()
+const routePath = Astro.params.path ?? ''
+const suffixMatch = routePath.match(/^(.+)_(zh-CN|zh-TW|en)$/)
+const docPath = suffixMatch ? suffixMatch[1] : routePath
+const doc = docs.get(docPath)
+
+const langs = doc?.langs ?? []
+const titles = doc?.titles ?? {}
+const defaultLang = langs.includes('zh-CN') ? 'zh-CN' : langs[0] ?? 'zh-CN'
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={defaultLang}>
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Redirecting…</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{titles[defaultLang] ?? 'Weila Static'}</title>
   </head>
-  <body>
-    <script define:vars={{ langs }}>
-      const requested = new URLSearchParams(location.search).get('lang')
-      const lang = requested && langs.includes(requested)
-        ? requested
-        : (langs.includes('zh-CN') ? 'zh-CN' : langs[0])
-      const pathname = location.pathname.replace(/\/$/, '')
-      location.replace(`${pathname}_${lang}${location.search}${location.hash}`)
+  <body class="markdown-body">
+    {langs.length > 1 && (
+      <div id="lang-switcher" role="group" aria-label="语言 / Language">
+        {langs.map(lang => (
+          <button type="button" data-lang={lang} aria-pressed={lang === defaultLang ? 'true' : 'false'}>
+            {LANG_LABELS[lang] ?? lang}
+          </button>
+        ))}
+      </div>
+    )}
+
+    <main class="mxa p8 container">
+      {langs.map((lang) => {
+        const Content = doc!.contents[lang] as any
+        return (
+          <article data-lang={lang} hidden={lang !== defaultLang}>
+            <Content />
+          </article>
+        )
+      })}
+    </main>
+
+    <!--
+      迷你 bridge 实现(ES5 内联,零外部依赖)。
+      逻辑对齐 @vois/webview-bridge@0.5.1 源码(src/bridge/*, src/platform.ts):
+      Android 走 WebViewJavascriptBridge + WebViewJavascriptBridgeReady 事件,
+      iOS 走 webkit.messageHandlers.uniBridgeCall + 50ms 轮询 + window 回调名。
+      桌面调试:localStorage.voisIntlBridgeDebug='1' 时用本地参数池模拟原生应答,
+      lang 取 localStorage.voisIntlBridgeDebugLang(默认 zh-CN)。
+    -->
+    <script is:inline>
+      ;(function (global) {
+        'use strict'
+
+        var HANDLER_NAME = 'uniBridgeCall'
+
+        function ua() { return (global.navigator && global.navigator.userAgent) || '' }
+        function isAndroid() { var u = ua(); return u.indexOf('Android') !== -1 || u.indexOf('Adr') !== -1 }
+        function isIOS() { return /\(i[^;]+;( U;)? CPU.+Mac OS X/.test(ua()) }
+
+        function debugLang() {
+          try {
+            if (global.localStorage && global.localStorage.getItem('voisIntlBridgeDebug') === '1')
+              return global.localStorage.getItem('voisIntlBridgeDebugLang') || 'zh-CN'
+          } catch (e) {}
+          return null
+        }
+        function isSupportBridge() { return isAndroid() || isIOS() || debugLang() !== null }
+
+        // —— 等待原生通道注入 ——
+        function whenAndroid() {
+          return new Promise(function (resolve) {
+            var done = false
+            function finish() {
+              if (done) return
+              done = true
+              var wvjb = global.WebViewJavascriptBridge
+              try { wvjb.init(function (_msg, cb) { cb({ 'Javascript Responds': 'Wee!' }) }) } catch (e) {}
+              resolve(wvjb)
+            }
+            if (global.WebViewJavascriptBridge) return finish()
+            document.addEventListener('WebViewJavascriptBridgeReady', function () {
+              if (global.WebViewJavascriptBridge) finish()
+            }, { once: true })
+          })
+        }
+        function whenIOS() {
+          return new Promise(function (resolve) {
+            function has() {
+              return !!(global.webkit && global.webkit.messageHandlers
+                && global.webkit.messageHandlers[HANDLER_NAME]
+                && global.webkit.messageHandlers[HANDLER_NAME].postMessage)
+            }
+            if (has()) return resolve()
+            var t = setInterval(function () {
+              if (has()) { clearInterval(t); resolve() }
+            }, 50)
+          })
+        }
+
+        // —— 把 (type, data, onResponse) 落到平台通道 ——
+        var cbSeq = 0
+        function createNativeCall() {
+          if (isAndroid()) {
+            return function (type, data, onResponse) {
+              global.WebViewJavascriptBridge.callHandler(HANDLER_NAME, JSON.stringify({ type: type, data: data }), onResponse)
+            }
+          }
+          if (isIOS()) {
+            return function (type, data, onResponse) {
+              var payload = { type: type, data: data }
+              if (onResponse) {
+                var name = 'bridge_callback_' + String(type).replace(/[^A-Za-z0-9_$]/g, '_') + '_' + (++cbSeq)
+                global[name] = function (raw) { delete global[name]; onResponse(raw) }
+                payload.callbackName = name
+              }
+              global.webkit.messageHandlers[HANDLER_NAME].postMessage(JSON.stringify(payload))
+            }
+          }
+          // 桌面调试:模拟原生 get-page-params 应答
+          return function (type, data, onResponse) {
+            if (onResponse) onResponse(JSON.stringify({ errcode: 0, errmsg: '', data: { lang: debugLang() || 'zh-CN' } }))
+          }
+        }
+
+        function makeRequest(nativeCall) {
+          return function (type, data) {
+            return new Promise(function (resolve, reject) {
+              nativeCall(type, data == null ? {} : data, function (raw) {
+                try { resolve(JSON.parse(raw)) } catch (e) { reject(new Error('bridge: invalid response')) }
+              })
+            })
+          }
+        }
+
+        // —— onBridgeReady:页面级单例、多播(不支持的环境永不回调,与官方一致) ——
+        var ready = null
+        var listeners = []
+        var waitStarted = false
+        function onBridgeReady(cb) {
+          if (ready) return cb(ready)
+          listeners.push(cb)
+          if (waitStarted) return
+          waitStarted = true
+          if (!isSupportBridge()) return
+          // 桌面调试环境(isAndroid/isIOS 均假但 debug 开)直接就绪,无需等待原生注入
+          var p = isAndroid() ? whenAndroid() : (isIOS() ? whenIOS() : Promise.resolve())
+          p.then(function () {
+            ready = { request: makeRequest(createNativeCall()) }
+            var ls = listeners.splice(0)
+            for (var i = 0; i < ls.length; i++) {
+              try { ls[i](ready) } catch (e) { setTimeout(function () { throw e }) }
+            }
+          })
+        }
+
+        global.VoisIntlBridge = { isSupportBridge: isSupportBridge, onBridgeReady: onBridgeReady }
+      })(window)
+    </script>
+
+    <!-- 页面语言逻辑:?lang= > 旧 URL 后缀 > bridge > navigator > zh-CN -->
+    <script is:inline define:vars={{ langs, titles, defaultLang, pageParam: docPath }}>
+      ;(function () {
+        'use strict'
+
+        var docLangs = langs
+        var fallbackLang = docLangs.indexOf(defaultLang) !== -1 ? defaultLang : docLangs[0]
+
+        // 语言归一化:iOS 端未验证是否归一(Android 会把 zh → zh-CN、zh-rTW → zh-TW),前端统一兜底
+        function normalizeLang(raw) {
+          if (typeof raw !== 'string') return null
+          var s = raw.trim()
+          if (!s) return null
+          if (s === 'zh-CN' || s === 'zh-Hans' || s === 'zh-Hans-CN' || s === 'zh' || s === 'zh-rCN') return 'zh-CN'
+          if (s === 'zh-TW' || s === 'zh-rTW' || s === 'zh-HK' || s === 'zh-MO'
+            || s === 'zh-Hant' || s.indexOf('zh-Hant') === 0) return 'zh-TW'
+          if (s.toLowerCase().indexOf('en') === 0) return 'en'
+          return null
+        }
+        function pick(raw) {
+          var n = normalizeLang(raw)
+          return n && docLangs.indexOf(n) !== -1 ? n : null
+        }
+
+        // —— DOM ——
+        var sections = {}
+        var buttons = []
+        var applied = null
+
+        function applyLang(lang) {
+          if (docLangs.indexOf(lang) === -1 || lang === applied) return
+          applied = lang
+          for (var i = 0; i < docLangs.length; i++) {
+            var l = docLangs[i]
+            if (sections[l]) sections[l].hidden = (l !== lang)
+          }
+          document.documentElement.lang = lang
+          if (titles[lang]) document.title = titles[lang]
+          for (var j = 0; j < buttons.length; j++)
+            buttons[j].setAttribute('aria-pressed', buttons[j].getAttribute('data-lang') === lang ? 'true' : 'false')
+        }
+
+        function initDom() {
+          var arts = document.getElementsByTagName('article')
+          for (var i = 0; i < arts.length; i++) {
+            var l = arts[i].getAttribute('data-lang')
+            if (l) sections[l] = arts[i]
+          }
+          var btns = document.querySelectorAll('#lang-switcher button')
+          for (var k = 0; k < btns.length; k++) {
+            (function (btn) {
+              buttons.push(btn)
+              btn.onclick = function () { applyLang(btn.getAttribute('data-lang')) }
+            })(btns[k])
+          }
+        }
+
+        initDom()
+
+        // —— 阶段一(同步):显式指定(?lang= / 旧后缀 URL)直接生效,不再询问 bridge ——
+        var forced = null
+
+        // 旧版语言后缀路径:强制该语言,并把 URL 规范化为裸路径
+        var m = location.pathname.match(/_(zh-CN|zh-TW|en)(?=\/?$)/)
+        if (m) {
+          forced = pick(m[1]) || fallbackLang
+          history.replaceState(null, '', location.pathname.replace(/_(zh-CN|zh-TW|en)(?=\/?$)/, '') + location.search + location.hash)
+        }
+
+        // ?lang= 覆盖(兼容旧链接,优先级最高)
+        var qm = location.search.match(/[?&]lang=([^&]+)/)
+        if (qm) forced = pick(decodeURIComponent(qm[1])) || forced
+
+        if (forced) {
+          applyLang(forced)
+          return
+        }
+
+        // —— 阶段二(同步先展示 navigator 结果,bridge 应答后再校正) ——
+        applyLang(pick(navigator.language || navigator.userLanguage || '') || fallbackLang)
+
+        if (!window.VoisIntlBridge || !window.VoisIntlBridge.isSupportBridge()) return
+
+        // bridge 库无超时机制,自行兜底;超时后维持当前语言
+        var settled = false
+        var timer = setTimeout(function () { settled = true }, 2000)
+        window.VoisIntlBridge.onBridgeReady(function (bridge) {
+          if (settled) return
+          bridge.request('get-page-params', { page: pageParam, params: ['lang'] }).then(function (res) {
+            clearTimeout(timer)
+            if (settled) return
+            settled = true
+            var lang = res && res.errcode === 0 && res.data && res.data.lang
+            var picked = pick(lang)
+            if (picked) applyLang(picked)
+          }, function () {
+            clearTimeout(timer)
+            settled = true
+          })
+        })
+      })()
     </script>
   </body>
 </html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  #lang-switcher {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 50;
+    display: flex;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  #lang-switcher button {
+    padding: 0.5rem 0.875rem;
+    border: 0;
+    background: transparent;
+    color: #4b5563;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  #lang-switcher button:hover {
+    background: #f9fafb;
+    color: #111827;
+  }
+
+  #lang-switcher button[aria-pressed='true'] {
+    background: #f3f4f6;
+    color: #111827;
+    font-weight: 500;
+  }
+</style>

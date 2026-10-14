@@ -20,12 +20,14 @@ Push 版本后，将会在 [Release](https://github.com/kvoon9/weila-common-stat
 │   │   ├── ios/         # iOS 平台相关页面
 │   │   ├── android/     # Android 平台相关页面
 │   │   ├── web/         # Web 平台相关页面
-│   │   ├── intl/        # 国际化页面
+│   │   ├── intl/        # 国际化文档入口(裸路径 + 旧链接兼容,见 AGENTS.md)
 │   │
 │   │   ├── corp/        # 将弃用，请使用 ios/corp 目录
 │   │   ├── corp-web/    # 将弃用，请使用 web/corp 目录
 │   │   └── *.astro      # 通用页面
 │   │
+│   ├── content/
+│   │   └── intl/        # 国际化文档 md 源文件(按语言后缀分文件,不直接生成页面)
 │   ├── components/      # Vue 组件
 │   ├── layouts/         # Astro 布局组件
 │   └── shared/          # 共享常量和工具
