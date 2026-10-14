@@ -26,13 +26,13 @@ This Agreement also includes any additional agreements or business rules that Vo
 
 **2.1 Content of the Services**
 
-The services refer to the cross-platform communication tool provided by VoisChat to users, which supports one-on-one and group participation. In addition to instant messaging services such as voice messages, videos, images and text, the services also provide users with functions including but not limited to social network expansion, convenient tools, open platform and other software licensing and services (hereinafter referred to as "the Services").
+The services refer to the cross-platform communication tool provided by VoisChat to users, which supports one-on-one and group real-time intercom, and provides instant messaging services such as text, voice, images, videos, files and location messages, as well as real-time location sharing, geofences, and Bluetooth intercom device management (hereinafter referred to as "the Services").
 
 **2.2 Form of the Services**
 
-**2.2.1 To use the Services, you need to download the VoisChat client software. For this software, VoisChat grants you a personal, non-transferable and non-exclusive license. The web version, Windows version and Mac version of VoisChat require QR code scanning for login. You may only use this software and services for the purpose of accessing or using the Services.**
+**2.2.1 To use the Services, you need to download the VoisChat client software (e.g., the Android version). For this software, VoisChat grants you a personal, non-transferable and non-exclusive license. You may only use this software and services for the purpose of accessing or using the Services.**
 
-**2.2.2 The VoisChat client software in the Services is available for multiple platforms including but not limited to iOS, Windows and Mac. Users must select the version compatible with their installed device.**
+**2.2.2 VoisChat may provide different software versions for different devices. Please refer to the versions actually released and select the version compatible with your installed device.**
 
 **2.3 Scope of the Service License**
 
@@ -54,9 +54,7 @@ The services refer to the cross-platform communication tool provided by VoisChat
 
 **4.2 After downloading the installation program, you need to follow the steps prompted by the program to install it correctly.**
 
-**4.3 To provide higher-quality and safer services, VoisChat may recommend installing other software during the installation of this Software. You may choose to install or not install it.**
-
-**4.4 If you no longer need this Software or need to install a new version, you may uninstall it yourself. If you are willing to help VoisChat improve its products and services, please inform us of the reason for uninstallation.**
+**4.3 If you no longer need this Software or need to install a new version, you may uninstall it yourself. If you are willing to help VoisChat improve its products and services, please inform us of the reason for uninstallation.**
 
 ## 5. Software Updates
 
@@ -70,7 +68,7 @@ The services refer to the cross-platform communication tool provided by VoisChat
 
 **6.1 Protecting user personal information is a fundamental principle of VoisChat. VoisChat will take reasonable measures to protect users' personal information. Except as required by laws and regulations, VoisChat will not disclose user personal information to third parties without user consent. VoisChat employs professional encryption for storage and transmission to ensure the security of user personal information.**
 
-**6.2 During account registration or use of the services, you may need to provide certain necessary information, such as: mobile email number for account registration or user identification; agreement to use your geographic location information for the "People Nearby" feature; real identity information where required by laws or regulations. Incomplete information may restrict your ability to use the services.**
+**6.2 To register an account or use the services, you need to provide your email address and the email verification code for account registration and identity verification; location permission is required for location sharing features; Bluetooth permission is required for Bluetooth intercom devices. If the information you provide is incomplete, you may be unable to use the corresponding services.**
 
 **6.3 Generally, you may review and modify your submitted information at any time. However, for security and identification purposes (e.g., account recovery), you may not be able to modify initial registration information or other verification details.**
 
@@ -84,7 +82,7 @@ The services refer to the cross-platform communication tool provided by VoisChat
 
 **7.1 Account Usage Rules**
 
-**7.1.1 To use the services, you need to register a VoisChat account, which can be created using a mobile email number. VoisChat reserves the right to modify account registration and binding methods based on user needs or product requirements. Specific rules for account usage shall comply with relevant account agreements and VoisChat's special rules.**
+**7.1.1 To use the services, you need to register a VoisChat account, which can be created using your email address. VoisChat reserves the right to modify account registration and binding methods based on user needs or product requirements. Specific rules for account usage shall comply with relevant account agreements and VoisChat's special rules.**
 
 **7.1.2 Ownership of VoisChat accounts belongs to VoisChat. Upon completing registration, users obtain only the right to use the account, which is limited to the original registrant. The original registrant may not transfer, lend, lease, sell, or otherwise permit non-original registrants to use the account. Non-original registrants may not obtain account usage rights through gift, inheritance, lease, transfer, or any other means.**
 
@@ -96,7 +94,7 @@ The services refer to the cross-platform communication tool provided by VoisChat
 
 **7.2.1 You understand and agree: To provide effective services, this Software will utilize your device's processor, bandwidth, and other resources. Data usage fees may apply during software use. Users should consult their carriers about relevant charges and bear such costs.**
 
-**7.2.2 You understand and agree: Certain features may allow third parties to access user information, such as: VoisChat friends viewing public profile information (avatar, name, VoisChat ID, or social feed content); users who register with or link mobile numbers may be discoverable by contacts with that number; following official accounts grants them access to follower information (avatar, name, VoisChat ID, comments, images, videos) and enables interaction through the official platform. Comments and uploaded content may be published by official accounts for third-party viewing.**
+**7.2.2 You understand and agree: certain features may make some of your information visible to other users. For example, your friends and other users may view your avatar, nickname, VoisChat ID, signature and other public profile information; when you enable location sharing, your friends and group members may view your real-time location.**
 
 **7.2.3 When using specific services, separate agreements or rules may apply. You must read and agree to these separate terms before using such services.**
 
@@ -116,7 +114,7 @@ The services refer to the cross-platform communication tool provided by VoisChat
 
 **7.2.5.3 Risks from third-party websites accessed through the software;**
 
-**7.2.5.4 Risks and responsibilities from having your content shared by others;；**
+**7.2.5.4 Risks and responsibilities from having your content shared by others;**
 
 **7.2.5.5 Service issues caused by unstable wireless signals or limited bandwidth (login failures, incomplete data syncing, slow page loading, etc.).**
 
@@ -124,51 +122,23 @@ The services refer to the cross-platform communication tool provided by VoisChat
 
 **7.3.1 When using third-party products or services through the software, you must comply with both this Agreement and the third party's terms. VoisChat and third parties bear their respective responsibilities for disputes within legal and agreed limits.**
 
-**7.3.2 When services require accessing third-party systems (including official account services or open platform content), VoisChat does not guarantee the security, accuracy, or effectiveness of such third-party content. Any disputes or damages arising therefrom are not VoisChat's responsibility.**
+**7.3.2 When services require accessing third-party systems, VoisChat does not guarantee the security, accuracy, or effectiveness of such third-party content. Any disputes or damages arising therefrom are not VoisChat's responsibility.**
 
-**7.3.3 You understand and agree that VoisChat may use the software for commercial purposes, including promoting third parties. VoisChat promises to protect your personal information during such promotions per this Agreement, and you may opt out through system settings.**
-
-## User Conduct Guidelines
+## 8. User Conduct Guidelines
 
 **8.1 Content Standards**
 
-**8.1.1 The term "content" refers to all materials created, copied, published, or disseminated by users while using the Software and services, including but not limited to VoisChat account profile pictures, names, descriptions, and other registration information; text, voice messages, images, social feed posts, related links, and any other content generated through VoisChat accounts or services.**
+**8.1.1 The term "content" refers to all materials created, copied, published, or disseminated by users while using the Software and services, including but not limited to VoisChat account profile pictures, names, descriptions, and other registration information; text, voice messages, images, videos, files and other messages you send, and any other content generated through VoisChat accounts or services.**
 
 **8.1.2 You understand and agree that VoisChat is committed to providing a civilized, healthy, and well-regulated online environment. You must not use VoisChat accounts or services to create, copy, publish, or disseminate content that disrupts normal operations or infringes upon the legitimate rights of other users or third parties, including:**
 
-**8.1.2.1 Content violating national laws and regulations:**
+**8.1.2.1 Content infringing upon reputation, portrait rights, intellectual property, trade secrets, or other legitimate rights;**
 
-(1) Content undermining constitutional principles;
+**8.1.2.2 Content involving others' privacy or personal information;**
 
-(2) Content endangering national security, leaking state secrets, subverting state power, or undermining national unity;
+**8.1.2.3 Harassment, advertising, excessive marketing, spam, or sexually suggestive content;**
 
-(3) Content harming national honor and interests;
-
-(4) Content inciting ethnic hatred, discrimination, or undermining national unity;
-
-(5) Content violating religious policies or promoting cults and superstitions;
-
-(6) Rumors disrupting social order and stability;
-
-(7) Obscene, pornographic, gambling-related, violent, terroristic, or criminal content;
-
-(8) Content defaming others or infringing upon their rights;
-
-(9) Content inciting illegal assemblies, protests, or social disorder;
-
-(10) Activities in the name of unauthorized organizations;
-
-(11) Content violating the "Seven Bottom Lines" requirements regarding laws, socialist system, national interests, civil rights, public order, social morals, and information authenticity under the Interim Provisions on the Development and Management of Instant Messaging Tool Public Information Services;
-
-(12) Other content prohibited by laws and regulations.
-
-**8.1.2.2 Content infringing upon reputation, portrait rights, intellectual property, trade secrets, or other legitimate rights;**
-
-**8.1.2.3 Content involving others' privacy or personal information;**
-
-**8.1.2.4 Harassment, advertising, excessive marketing, spam, or sexually suggestive content;**
-
-**8.1.2.5 Other content violating laws, regulations, public order, social morals, disrupting VoisChat operations, or infringing upon others' rights.**
+**8.1.2.4 Other content violating laws, regulations, public order, social morals, disrupting VoisChat operations, or infringing upon others' rights.**
 
 **8.2 Software Usage Rules**
 
