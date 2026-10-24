@@ -1,79 +1,21 @@
 ---
-// 导入 Vue 组件
-import PageTree from '../components/PageTree.vue'
-import { loadIntlDocs } from '../shared/intl'
+// 站点首页:自动生成页面导航树。
+// 树的构建(含每页标题、目录计数)在 ~/shared/page-tree 里,与 intl 文档共用数据源。
+import PageTree from '~/components/PageTree.vue'
+import { loadPageTree } from '~/shared/page-tree'
 
-// intl 文档目录名即裸路径入口(如 intl/ios/personal/license),与渲染页共用同一数据源
-const intlDocPaths = [...(await loadIntlDocs()).keys()]
+// 单语页面(走 Typo.astro)与多语言文档(走 Content Layer + bridge)分开展示,
+// 避免 /ios 与 /intl/ios 这类同名目录被误认为同一个
+const { plain, intl } = await loadPageTree()
 
-// 使用 Vite glob API 获取所有页面
-const pageGlob = import.meta.glob(['./**/*.astro', './**/*.md'], {
-  eager: false,
-  query: '?url',
-})
-
-// 定义类型
-interface PageItem {
-  type: 'page'
-  path: string
+function countOf(tree: typeof plain): number {
+  return Object.values(tree).reduce((sum, node) => sum + (node.type === 'page' ? 1 : node.count), 0)
 }
 
-interface FolderItem {
-  type: 'folder'
-  children: TreeStructure
-}
-
-type TreeStructure = Record<string, PageItem | FolderItem>
-
-// 构建页面树结构
-function buildPageTree(): TreeStructure {
-  const tree: TreeStructure = {}
-
-  function insertPath(cleanPath: string) {
-    const parts = cleanPath.split('/')
-    let currentLevel: TreeStructure = tree
-
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i]
-      const isLeaf = i === parts.length - 1
-
-      if (!currentLevel[part]) {
-        currentLevel[part] = isLeaf ? { type: 'page', path: cleanPath } : { type: 'folder', children: {} }
-      }
-
-      if (!isLeaf) {
-        currentLevel = (currentLevel[part] as FolderItem).children
-      }
-    }
-  }
-
-  // 处理 glob 结果
-  for (const [path] of Object.entries(pageGlob)) {
-    // 移除开头的 ./ 和文件扩展名
-    const cleanPath = path.replace(/^\.\//, '').replace(/\.(astro|md)$/, '')
-
-    // 跳过 index 页面本身
-    if (cleanPath === 'index')
-      continue
-
-    // 跳过动态路由文件(如 intl/[...path]),它由下面的 intl 文档列表展开,
-    // 直接插入会生成字面量 [...path] 坏链
-    if (cleanPath.includes('['))
-      continue
-
-    insertPath(cleanPath)
-  }
-
-  // intl 文档:目录名即裸路径,直接插入(如 intl/ios/personal/license)
-  for (const docPath of intlDocPaths)
-    insertPath(`intl/${docPath}`)
-
-  return tree
-}
-
-const pageTree = buildPageTree()
+const totalPages = countOf(plain) + countOf(intl)
 ---
 
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
@@ -84,12 +26,36 @@ const pageTree = buildPageTree()
     <div class="mx-auto p-6 rounded-lg bg-white max-w-4xl shadow-sm">
       <div class="mb-8 pb-4 text-center border-b border-gray-200">
         <h1 class="text-2xl text-gray-800 font-bold mb-2">Weila Static</h1>
-        <p class="text-gray-600 m-0">页面导航树 - Auto Generated</p>
+        <p class="text-gray-600 m-0">
+          公共静态文档导航 · 共 {totalPages} 篇
+        </p>
       </div>
 
-      <div class="tree-container">
-        <PageTree tree={pageTree} />
+      <div class="tree-container space-y-8">
+        <section class="board">
+          <h2 class="board-title">
+            多语言文档 <span class="board-note">语言由 App 注入 · 同一链接自适应</span>
+          </h2>
+          <PageTree tree={intl} />
+        </section>
+
+        <section class="board">
+          <h2 class="board-title">
+            单语页面 <span class="board-note">仅中文</span>
+          </h2>
+          <PageTree tree={plain} />
+        </section>
       </div>
     </div>
   </body>
 </html>
+
+<style>
+  .board-title {
+    @apply mb-3 pb-2 text-gray-500 text-sm font-semibold tracking-wide border-b border-gray-200;
+  }
+
+  .board-note {
+    @apply ml-2 text-gray-400 text-xs font-normal;
+  }
+</style>

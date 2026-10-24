@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import type { PageNode, TreeNode, TreeStructure } from '~/shared/page-tree'
 import PageTree from './PageTree.vue'
-
-interface PageItem {
-  type: 'page'
-  path: string
-}
-
-interface FolderItem {
-  type: 'folder'
-  children: TreeStructure
-}
-
-type TreeStructure = Record<string, PageItem | FolderItem>
 
 interface Props {
   name: string
-  item: PageItem | FolderItem
+  item: TreeNode
   path?: string
 }
 
@@ -28,30 +17,29 @@ const currentPath = computed(() => {
   return props.path ? `${props.path}/${props.name}` : props.name
 })
 
+const page = computed(() => props.item.type === 'page' ? props.item as PageNode : null)
+
+/** 语言徽标:多语言文档显示其实际存在的语言,单语页不显示 */
+const langBadges = computed(() => page.value?.langs ?? [])
+
 function toggleFolder(event: Event) {
-  // 阻止默认行为，让我们自己控制展开/折叠
+  // 阻止默认行为,让我们自己控制展开/折叠
   event.preventDefault()
   isOpen.value = !isOpen.value
-}
-
-function getItemCount(tree: TreeStructure): number {
-  return Object.keys(tree).length
 }
 
 const base = import.meta.env.BASE_URL
 </script>
 
-
 <template>
   <div class="tree-item">
-    <!-- 页面项 -->
-    <div v-if="item.type === 'page'" class="page-item">
-      <a
-        :href="`${base}/${item.path}`"
-        class="page-link"
-      >
-        <span class="page-icon">📄</span>
-        {{ name }} {{ `${base}/${item.path}` }}
+    <!-- 页面项:文案用文章标题 -->
+    <div v-if="page" class="page-item">
+      <a :href="`${base}/${page.path}`" class="page-link">
+        <span class="page-title">{{ page.title }}</span>
+        <span v-if="langBadges.length" class="lang-badges">
+          <span v-for="lang in langBadges" :key="lang" class="lang-badge">{{ lang }}</span>
+        </span>
       </a>
     </div>
 
@@ -63,15 +51,10 @@ const base = import.meta.env.BASE_URL
             {{ isOpen ? '📂' : '📁' }}
           </span>
           <span class="folder-name">{{ name }}</span>
-          <span class="folder-count">
-            ({{ getItemCount(item.children) }})
-          </span>
+          <span v-if="item.count" class="folder-count">{{ item.count }}</span>
         </summary>
         <div class="folder-content">
-          <PageTree
-            :tree="item.children"
-            :path="currentPath"
-          />
+          <PageTree :tree="item.children" :path="currentPath" />
         </div>
       </details>
     </div>
@@ -88,13 +71,22 @@ const base = import.meta.env.BASE_URL
 }
 
 .page-link {
-  @apply block px-3 py-2 text-gray-700 no-underline rounded border border-transparent
+  @apply px-3 py-2 text-gray-700 no-underline rounded border border-transparent
          transition-all duration-200 hover:bg-gray-100 hover:text-gray-900
-         flex items-center gap-2;
+         flex items-center gap-3;
 }
 
-.page-icon {
-  @apply text-base;
+.page-title {
+  @apply flex-1 min-w-0 truncate;
+}
+
+.lang-badges {
+  @apply flex shrink-0 items-center gap-1 whitespace-nowrap;
+}
+
+.lang-badge {
+  @apply px-1.5 py-0.5 text-gray-400 text-xs leading-none rounded
+         bg-gray-50 border border-gray-200;
 }
 
 .folder-details {
@@ -117,11 +109,11 @@ const base = import.meta.env.BASE_URL
 }
 
 .folder-name {
-  @apply flex-1;
+  @apply shrink-0;
 }
 
 .folder-count {
-  @apply text-gray-500 text-sm;
+  @apply shrink-0 px-1.5 py-0.5 text-gray-400 text-xs leading-none rounded bg-gray-100;
 }
 
 .folder-content {

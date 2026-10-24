@@ -1,18 +1,7 @@
 <script setup lang="ts">
+import type { TreeStructure } from '~/shared/page-tree'
 import { computed } from 'vue'
 import TreeItem from './TreeItem.vue'
-
-interface PageItem {
-  type: 'page'
-  path: string
-}
-
-interface FolderItem {
-  type: 'folder'
-  children: TreeStructure
-}
-
-type TreeStructure = Record<string, PageItem | FolderItem>
 
 interface Props {
   tree: TreeStructure
@@ -21,17 +10,18 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// 排序函数：文件夹在前，页面在后，按名称排序
+// 排序:目录在前、页面在后;同类型按展示文案排序
+// (目录比目录名,页面比文章标题;都按中文/英文的自然顺序)
 const sortedEntries = computed(() => {
-  const entries = Object.entries(props.tree)
+  return Object.entries(props.tree).sort(([nameA, a], [nameB, b]) => {
+    if (a.type === 'folder' && b.type === 'page')
+      return -1
+    if (a.type === 'page' && b.type === 'folder')
+      return 1
 
-  return entries.sort(([nameA, itemA], [nameB, itemB]) => {
-    // 先按类型排序：文件夹在前，页面在后
-    if (itemA.type === 'folder' && itemB.type === 'page') return -1
-    if (itemA.type === 'page' && itemB.type === 'folder') return 1
-
-    // 同类型按名称排序
-    return nameA.localeCompare(nameB)
+    const labelA = a.type === 'page' ? a.title : nameA
+    const labelB = b.type === 'page' ? b.title : nameB
+    return labelA.localeCompare(labelB, 'zh-Hans-CN')
   })
 })
 </script>
