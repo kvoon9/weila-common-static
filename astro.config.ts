@@ -11,6 +11,12 @@ export default defineConfig({
   // NOTE: not working now
   site: 'https://demoui.weila.hk',
   base,
+  // 语言清单的单一来源:页面通过 astro:config/client 读取这里(见 src/shared/intl.ts)。
+  // 本项目不生成 /<locale>/ URL,详见 AGENTS.md 的 i18n 一节。
+  i18n: {
+    locales: ['zh-CN', 'zh-TW', 'en'],
+    defaultLocale: 'zh-CN',
+  },
   integrations: [
     UnoCSS({
       injectReset: true,

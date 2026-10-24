@@ -1,16 +1,13 @@
 ---
 // 导入 Vue 组件
 import PageTree from '../components/PageTree.vue'
+import { loadIntlDocs } from '../shared/intl'
+
+// intl 文档目录名即裸路径入口(如 intl/ios/personal/license),与渲染页共用同一数据源
+const intlDocPaths = [...(await loadIntlDocs()).keys()]
 
 // 使用 Vite glob API 获取所有页面
 const pageGlob = import.meta.glob(['./**/*.astro', './**/*.md'], {
-  eager: false,
-  query: '?url',
-})
-
-// intl 多语言文档位于 src/content/intl（由 src/pages/intl/[...path].astro 统一渲染），
-// 同一篇文档的多个语言后缀文件归并为一个裸路径入口
-const intlGlob = import.meta.glob('../content/intl/**/*.md', {
   eager: false,
   query: '?url',
 })
@@ -59,20 +56,17 @@ function buildPageTree(): TreeStructure {
     if (cleanPath === 'index')
       continue
 
+    // 跳过动态路由文件(如 intl/[...path]),它由下面的 intl 文档列表展开,
+    // 直接插入会生成字面量 [...path] 坏链
+    if (cleanPath.includes('['))
+      continue
+
     insertPath(cleanPath)
   }
 
-  // intl 文档:剥掉语言后缀后去重,插入裸路径(如 intl/ios/personal/license)
-  const intlPaths = new Set<string>()
-  for (const [path] of Object.entries(intlGlob)) {
-    const cleanPath = path
-      .replace(/^\.\.\//, '')
-      .replace(/^content\//, '')
-      .replace(/_(zh-CN|zh-TW|en)\.md$/, '')
-    intlPaths.add(cleanPath)
-  }
-  for (const cleanPath of intlPaths)
-    insertPath(cleanPath)
+  // intl 文档:目录名即裸路径,直接插入(如 intl/ios/personal/license)
+  for (const docPath of intlDocPaths)
+    insertPath(`intl/${docPath}`)
 
   return tree
 }

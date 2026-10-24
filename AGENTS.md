@@ -4,26 +4,33 @@
 
 ## i18n（多语言）约定
 
-**本项目没有使用 Astro 标准 i18n 路由**。多语言文档的**语言信息来自 App WebView bridge**（不是 URL）。改动多语言内容前必须读完本节。
+**本项目不生成 `/<locale>/` 形式的 URL**。多语言文档的**语言信息来自 App WebView bridge**（不是 URL），因此 Astro 的 i18n 路由能力（`prefixDefaultLocale`、`fallback`、`Astro.preferredLocale`）在本项目**全部用不上 / 不适用**（纯静态构建也没有服务端 `Accept-Language` 协商）。改动多语言内容前必须读完本节。
 
-### 文件约定
+### 语言清单的单一来源
 
-- 多语言 md 源文件位于 `src/content/intl/`（**不**在 `src/pages/` 下，不直接生成页面），每种语言一个文件，靠**文件名后缀**区分：`_zh-CN`、`_zh-TW`、`_en`
+- 语言代码只在 `astro.config.ts` 的 `i18n.locales` 里定义，`i18n.defaultLocale` 是降级目标
+- 页面通过 `astro:config/client` 读取这份配置（封装在 `src/shared/intl.ts` 的 `LOCALES` / `DEFAULT_LOCALE`），**不要在别处再硬编码语言代码列表**
+- 例外（属于 UI 文案，需手动维护）：`src/pages/intl/[...path].astro` 里的 `LANG_LABELS`（切换器显示名）、`normalizeLang`（bridge 返回值归一化）
+
+### 文件约定（Astro Content Layer）
+
+- 多语言 md 源文件位于 `src/content/intl/`，结构是 **`<文档路径>/<语言>.md`**（一篇文档一个目录，目录下按语言分文件）
+- 例：`src/content/intl/ios/personal/privacy/zh-CN.md` → URL `/common/intl/ios/personal/privacy`（裸路径，无语言后缀）
+- collection 定义在 `src/content.config.ts`，用 `glob()` loader；`generateId` 保留原始大小写（默认实现会小写化，把 `zh-CN` 破坏成 `zh-cn`）
 - md 文件**不写 frontmatter**（无 `layout`、无 `navigation`），正文以 `# 标题` 开头；首个 h1 即该语言版本的页面标题
-- 例：`src/content/intl/ios/personal/privacy_zh-CN.md` → URL `/common/intl/ios/personal/privacy`（裸路径，无语言后缀）
 - `intl/` 之外的页面（如 `src/pages/android/`）只有中文单文件、走 `Typo.astro` 布局，与多语言体系无关
 - 内容靠人工逐文件翻译维护，没有消息字典 / key 抽取
 
 ### URL 与语言解析（`src/pages/intl/[...path].astro`）
 
-- 每篇文档生成一个**干净裸路径**页面（如 `/intl/ios/personal/license`），构建期内嵌该文档全部语言版本，客户端切换显示；无 JS 环境默认展示 `zh-CN`
+- 每篇文档只生成**一个干净裸路径**页面（如 `/intl/ios/personal/license`），构建期内嵌该文档全部语言版本，客户端切换显示；无 JS 环境默认展示 `i18n.defaultLocale`
 - 语言解析优先级（客户端内联脚本）：
-  1. `?lang=` 显式覆盖——**仅兼容旧链接**，新链接不要再携带
-  2. 旧版语言后缀路径（`license_zh-CN`）——仍会生成对应页面（兼容已发布 App 内的旧链接），强制该语言并自动把 URL 规范化为裸路径（`history.replaceState`，无跳转）
-  3. **App WebView bridge**：`get-page-params` → `data.lang`（`zh-CN`/`zh-TW`/`en`），内联迷你实现见下
-  4. `navigator.language` 兜底（浏览器场景），归一化后仍不支持则回退 `zh-CN`
-- 文档没有的语言版本自动降级到 `zh-CN`
-- 语言切换器（右上角）由页面按该文档可用语言**自动生成**（`LANG_LABELS`），不再手写 navigation frontmatter
+  1. **App WebView bridge**：`get-page-params` → `data.lang`（`zh-CN`/`zh-TW`/`en`），内联迷你实现见下
+  2. `localStorage.voisIntlLang`：记住用户上一次的选择，减少首屏闪烁
+  3. `navigator.language` 兜底（浏览器场景），归一化后仍不支持则回退 `i18n.defaultLocale`
+- **已废弃、不要再加回来**：旧版语言后缀 URL（`license_zh-CN`）与 `?lang=xx` 均已移除，前者现在直接 404（已确认无存量链接），后者被静默忽略
+- 文档没有的语言版本自动降级到 `i18n.defaultLocale`
+- 语言切换器（右上角）由页面按该文档可用语言**自动生成**
 
 ### bridge（App WebView 语言获取）
 
@@ -34,9 +41,13 @@
 
 ### 新增语言时
 
-- 在 `src/pages/intl/[...path].astro` 中同步更新：`LANG_ORDER`、`LANG_LABELS`、getStaticPaths / 脚本里的语言正则（当前为 `zh-CN|zh-TW|en`）、`normalizeLang` 归一化表
-- 新增该语言的后缀 md 文件即可，旧后缀兼容页与切换器会自动生成
+1. 在 `astro.config.ts` 的 `i18n.locales` 里加上语言代码（决定展示顺序与是否生效）
+2. 按 `<文档路径>/<语言>.md` 放源文件即可 —— 页面、切换器、首页导航树会自动包含它，**无需改任何代码**
+3. 按需在 `LANG_LABELS` 补显示名、在 `normalizeLang` 补 bridge 归一化规则
+
+> 注：不在 `i18n.locales` 里的语言文件会被 `loadIntlDocs()` 跳过（不报错），可用来临时下架某语言。
 
 ### 硬性约束
 
 - 本站是纯静态构建，无 SSR / 中间件：不要引入任何依赖服务端语言检测（如 `Accept-Language` 请求头协商）的方案，dev 下能跑不代表部署后有效
+- 不要在 `src/pages/` 下放非路由的辅助模块（如曾经的 `intl/docs.ts`）——它会被 Astro 当成 endpoint 生成假路由并告警。共享逻辑放 `src/shared/`

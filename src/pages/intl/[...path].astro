@@ -3,43 +3,37 @@
 //
 // URL 规范:干净的裸路径(/common/intl/ios/personal/license),不携带语言信息。
 // 语言解析优先级(客户端,构建后生效):
-//   1. ?lang= 显式覆盖(仅兼容旧链接,新链接不要再携带)
-//   2. 旧版语言后缀路径(license_zh-CN,自动强制该语言并规范化 URL 为裸路径)
-//   3. App WebView bridge:get-page-params → data.lang(参考 vois-app-webview-next)
-//   4. navigator.language 兜底(浏览器场景)
-//   5. 以上都失败 → zh-CN
+//   1. App WebView bridge:get-page-params → data.lang(参考 vois-app-webview-next)
+//   2. localStorage 缓存的上一次选择(减少 App 外场景的首屏闪烁)
+//   3. navigator.language 兜底(浏览器场景)
+//   4. 以上都失败 → i18n.defaultLocale
 //
-// md 源文件位于 src/content/intl/(不再直接生成页面),构建期内嵌全部语言版本,
-// 由内联脚本切换显示;无 JS 环境下默认展示 zh-CN(渐进增强)。
-import { getIntlDocs } from './docs'
+// 文档来自 Astro Content Layer(源文件 src/content/intl/<文档路径>/<语言>.md,
+// 见 src/content.config.ts),构建期内嵌该文档全部语言版本,由内联脚本切换显示;
+// 无 JS 环境下默认展示站点默认语言(渐进增强)。
+import { DEFAULT_LOCALE, loadIntlDocs, pickDefaultLang } from '~/shared/intl'
 import 'github-markdown-css/github-markdown.css'
 
-// 语言展示顺序与切换器文案;新增语言时同步维护这里与 normalizeLang
+// 语言切换器文案;语言清单本身来自 astro.config.ts 的 i18n.locales
 const LANG_LABELS: Record<string, string> = {
   'zh-CN': '简体中文',
   'zh-TW': '繁體中文',
   'en': 'English',
 }
 
-// 每篇文档同时生成:干净裸路径 + 旧版语言后缀路径(兼容已发布 App 内的旧链接)
-export function getStaticPaths() {
-  const docs = getIntlDocs()
-  return [...docs.entries()].flatMap(([docPath, doc]) => [
-    { params: { path: docPath } },
-    ...doc.langs.map(lang => ({ params: { path: `${docPath}_${lang}` } })),
-  ])
+// 每篇文档生成一个干净裸路径页面。
+// NOTE: Astro 会把 getStaticPaths 单独抽取执行,不能引用模块顶层变量,这里独立加载。
+export async function getStaticPaths() {
+  const all = await loadIntlDocs()
+  return [...all.keys()].map(path => ({ params: { path } }))
 }
 
-// 读取全部文档供渲染(当前路由可能是裸路径或旧版后缀路径,统一剥掉后缀得到文档路径)
-const docs = getIntlDocs()
-const routePath = Astro.params.path ?? ''
-const suffixMatch = routePath.match(/^(.+)_(zh-CN|zh-TW|en)$/)
-const docPath = suffixMatch ? suffixMatch[1] : routePath
-const doc = docs.get(docPath)
+const documents = await loadIntlDocs()
+const doc = documents.get(Astro.params.path ?? '')
 
 const langs = doc?.langs ?? []
 const titles = doc?.titles ?? {}
-const defaultLang = langs.includes('zh-CN') ? 'zh-CN' : langs[0] ?? 'zh-CN'
+const defaultLang = doc ? pickDefaultLang(doc) : DEFAULT_LOCALE
 ---
 
 <!doctype html>
@@ -191,8 +185,8 @@ const defaultLang = langs.includes('zh-CN') ? 'zh-CN' : langs[0] ?? 'zh-CN'
       })(window)
     </script>
 
-    <!-- 页面语言逻辑:?lang= > 旧 URL 后缀 > bridge > navigator > zh-CN -->
-    <script is:inline define:vars={{ langs, titles, defaultLang, pageParam: docPath }}>
+    <!-- 页面语言逻辑:bridge > localStorage 缓存 > navigator > 站点默认语言 -->
+    <script is:inline define:vars={{ langs, titles, defaultLang, pageParam: doc?.path ?? '' }}>
       ;(function () {
         'use strict'
 
@@ -213,6 +207,15 @@ const defaultLang = langs.includes('zh-CN') ? 'zh-CN' : langs[0] ?? 'zh-CN'
         function pick(raw) {
           var n = normalizeLang(raw)
           return n && docLangs.indexOf(n) !== -1 ? n : null
+        }
+
+        // 记住用户上一次的选择,减少下次进入时的首屏闪烁
+        var CACHE_KEY = 'voisIntlLang'
+        function readCache() {
+          try { return globalThis.localStorage ? globalThis.localStorage.getItem(CACHE_KEY) : null } catch (e) { return null }
+        }
+        function writeCache(lang) {
+          try { if (globalThis.localStorage) globalThis.localStorage.setItem(CACHE_KEY, lang) } catch (e) {}
         }
 
         // —— DOM ——
@@ -243,38 +246,23 @@ const defaultLang = langs.includes('zh-CN') ? 'zh-CN' : langs[0] ?? 'zh-CN'
           for (var k = 0; k < btns.length; k++) {
             (function (btn) {
               buttons.push(btn)
-              btn.onclick = function () { applyLang(btn.getAttribute('data-lang')) }
+              btn.onclick = function () {
+                var picked = btn.getAttribute('data-lang')
+                applyLang(picked)
+                writeCache(picked)
+              }
             })(btns[k])
           }
         }
 
         initDom()
 
-        // —— 阶段一(同步):显式指定(?lang= / 旧后缀 URL)直接生效,不再询问 bridge ——
-        var forced = null
-
-        // 旧版语言后缀路径:强制该语言,并把 URL 规范化为裸路径
-        var m = location.pathname.match(/_(zh-CN|zh-TW|en)(?=\/?$)/)
-        if (m) {
-          forced = pick(m[1]) || fallbackLang
-          history.replaceState(null, '', location.pathname.replace(/_(zh-CN|zh-TW|en)(?=\/?$)/, '') + location.search + location.hash)
-        }
-
-        // ?lang= 覆盖(兼容旧链接,优先级最高)
-        var qm = location.search.match(/[?&]lang=([^&]+)/)
-        if (qm) forced = pick(decodeURIComponent(qm[1])) || forced
-
-        if (forced) {
-          applyLang(forced)
-          return
-        }
-
-        // —— 阶段二(同步先展示 navigator 结果,bridge 应答后再校正) ——
-        applyLang(pick(navigator.language || navigator.userLanguage || '') || fallbackLang)
+        // —— 阶段一(同步):缓存 > navigator,先给出一个合理的首屏语言 ——
+        applyLang(pick(readCache()) || pick(navigator.language || navigator.userLanguage || '') || fallbackLang)
 
         if (!window.VoisIntlBridge || !window.VoisIntlBridge.isSupportBridge()) return
 
-        // bridge 库无超时机制,自行兜底;超时后维持当前语言
+        // —— 阶段二(异步):bridge 应答后以原生为准;库无超时机制,自行兜底 ——
         var settled = false
         var timer = setTimeout(function () { settled = true }, 2000)
         window.VoisIntlBridge.onBridgeReady(function (bridge) {
@@ -285,7 +273,10 @@ const defaultLang = langs.includes('zh-CN') ? 'zh-CN' : langs[0] ?? 'zh-CN'
             settled = true
             var lang = res && res.errcode === 0 && res.data && res.data.lang
             var picked = pick(lang)
-            if (picked) applyLang(picked)
+            if (picked) {
+              applyLang(picked)
+              writeCache(picked)
+            }
           }, function () {
             clearTimeout(timer)
             settled = true
