@@ -88,6 +88,8 @@ The information collected about you by this App will be stored on the servers of
 
 Data transmitted between the App and our servers is encrypted in transit (HTTPS/TLS). Chat databases, credentials, and business files are excluded from device cloud backups (including Google Drive backup) and device-to-device migration, so your messages and login credentials are not copied to cloud backups.
 
+Location track data is retained for 1 month only, is used solely to provide the track features, and is deleted upon expiry.
+
 ## 4. How We Share, Transfer, and Disclose Personal Information
 
 We disclose your personal information only in the following circumstances:
