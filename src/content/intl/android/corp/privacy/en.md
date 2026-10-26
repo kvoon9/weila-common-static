@@ -44,9 +44,9 @@ We collect personal information to provide services and ensure compliance with a
 
 a) Microphone: For push-to-talk intercom and voice messages, including talking through a connected Bluetooth hand microphone. Your voice is recorded only while you hold the intercom button or record a voice message, and is transmitted only to the groups or contacts you select.
 
-b) Camera: For QR code scanning and for taking photos or videos to share.
+b) Camera: For QR code scanning and for taking photos or videos to share. Photos or videos you capture are first saved in the App's own private storage on your device and then sent.
 
-c) Photos and files: When you send photos or videos, you select them in the system photo picker and the App accesses only the items you pick there (it fully supports Android's "select photos" limited access). Files you choose to send as work files are accessed only through the system file picker. Voice messages and other media are saved in the App's own private storage on your device. On Android versions older than 10, saving exported files to the shared Download folder additionally requires the storage permission.
+c) Photos and files: When you send photos or videos, you select them in the system photo picker and the App accesses only the items you pick there (it fully supports Android's "select photos" limited access). Files you choose to send are accessed only through the system file picker. Voice messages and other media are saved in the App's own private storage on your device. On Android versions older than 10, saving exported files to the shared Download folder additionally requires the storage permission.
 
 d) Nearby devices (Bluetooth): Bluetooth is used only to discover and connect your VoisWork Bluetooth accessories (e.g., PTT buttons and Bluetooth hand microphones); it is not used to infer your physical location. On Android 12 and above, discovering and connecting to Bluetooth devices requires the "Nearby devices" permission; the location permission is requested only because some devices require it for Bluetooth scanning.
 
@@ -86,7 +86,7 @@ Privacy Policy: https://policies.google.com/privacy
 
 The information collected about you by this App will be stored on the servers of this App and/or its affiliated companies. Such information may be transmitted to, accessed from, stored in, and displayed in countries or regions outside your country of residence or where the information was collected.
 
-Data transmitted between the App and our servers is encrypted in transit (HTTPS/TLS). Location track data is retained only for the period needed to provide track features per your organization's configuration. Chat databases, credentials, and business files are excluded from device cloud backups (including Google Drive backup) and device-to-device migration, so your messages and login credentials are not copied to cloud backups.
+Data transmitted between the App and our servers is encrypted in transit (HTTPS/TLS). Chat databases, credentials, and business files are excluded from device cloud backups (including Google Drive backup) and device-to-device migration, so your messages and login credentials are not copied to cloud backups.
 
 ## 4. How We Share, Transfer, and Disclose Personal Information
 
@@ -108,7 +108,6 @@ We do not share your personal information with third parties for their own marke
 
 2  Please also take care when sharing personal information in messages, voice, or files with other users, and disclose it only when necessary. If you discover any unauthorized disclosure of your personal information—especially your username or password for this App—please contact our customer service immediately. You may also report the incident to the police so that we can take appropriate measures.
 
-3  Passwords are stored only in encrypted (hashed) form, and access to personal data is restricted to personnel who need it to operate the service. No method of transmission or storage is 100% secure.
 
 ## 6. How to Delete Your Account
 
@@ -126,7 +125,7 @@ Upon receiving the administrator's deletion request, we will process the account
 
 1  If we decide to modify our privacy policy, we will publish these changes within this policy, on our company website, and in other locations we deem appropriate. This will help you understand how we collect and use your personal information, who has access to it, and under what circumstances we may disclose it.
 
-2  To ensure this policy complies with applicable laws and regulations, we reserve the right to amend this policy at any time. Therefore, please review it regularly. For significant changes to this policy, we will notify you through website or in-app announcements.
+2  To ensure this policy complies with the laws of China (excluding Taiwan, Hong Kong, and Macau regions), we reserve the right to amend this policy at any time. Therefore, please review it regularly. For significant changes to this policy, we will notify you through website announcements.
 
 3  The current version of this policy is also available inside the App (Login screen → Privacy Policy, or About → Privacy Policy).
 
@@ -140,7 +139,6 @@ Address: 17A, Caiyun Pavilion, Rainbow New City, Caitian Road, Futian District, 
 
 Email: sales@weila.hk
 
-Privacy Policy online: https://www.voiswork.com/common/intl/android/corp/privacy_en/
 
 Thank you for taking the time to review our Privacy Policy!
 
