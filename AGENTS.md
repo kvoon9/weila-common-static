@@ -10,7 +10,7 @@
 
 - 语言代码只在 `astro.config.ts` 的 `i18n.locales` 里定义，`i18n.defaultLocale` 是降级目标
 - 页面通过 `astro:config/client` 读取这份配置（封装在 `src/shared/intl.ts` 的 `LOCALES` / `DEFAULT_LOCALE`），**不要在别处再硬编码语言代码列表**
-- 例外（属于 UI 文案，需手动维护）：`src/pages/intl/[...path].astro` 里的 `LANG_LABELS`（切换器显示名）、`normalizeLang`（bridge 返回值归一化）
+- 例外(属于 UI 文案,需手动维护):语言显示名 `LANG_LABELS` 在 `src/shared/intl.ts`(文档切换器与首页语言徽标共用);bridge 返回值归一化 `normalizeLang` 在 `src/pages/intl/[...path].astro`
 
 ### 文件约定（Astro Content Layer）
 

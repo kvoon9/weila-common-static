@@ -1,6 +1,41 @@
 // 首页导航树的数据模型:把「页面文件」统一成 { 路径, 标题, 语言 } 的条目,
-// 再按路径层级组装成树。标题优先取文章自身的标题,而不是文件名。
+// 再按路径层级组装成树。标题优先取文章自身的标题,而不是文件名;
+// 目录展示名可按路径或段名汉化(见 FOLDER_LABELS),未配置的目录保持路径段原样。
 import { DEFAULT_LOCALE, loadIntlDocs } from './intl'
+
+/**
+ * 目录显示名(汉化)。
+ * - 精确路径:该完整路径的目录名,优先级最高(如 intl 下的 ios 与单语 ios 区分「iOS 版 App」)
+ * - 段名:同名目录共用(如 personal/corp 这类与平台无关的分层)
+ * 未配置的目录保持原样,新增目录不需要动这里。
+ */
+const FOLDER_LABELS: { exact?: Record<string, string>, segment?: Record<string, string> } = {
+  exact: {
+    // intl 树的合成根目录(分区标题已说明「多语言」,目录名不再重复)
+    'intl': 'App WebView 文档',
+    'ios': 'iOS 版 App',
+    'android': 'Android 版 App',
+    'web': 'Web 版',
+    'intl/ios': 'iOS 版 App',
+    'intl/android': 'Android 版 App',
+    'intl/web': 'Web 版',
+    'intl/android-next': 'Android 版 VoisChat',
+    'intl/ios-next': 'iOS 版 VoisChat',
+    'intl/corp-web': 'Web 企业版',
+  },
+  segment: {
+    'android-next': 'Android 版 VoisChat',
+    'ios-next': 'iOS 版 VoisChat',
+    'corp-web': 'Web 企业版',
+    'corp': '企业版',
+    'personal': '个人版',
+  },
+}
+
+/** dirPath 到当前目录为止的相对路径,如 ios/personal;folderPath 加上目录名 */
+function folderLabel(folderPath: string, name: string): string {
+  return FOLDER_LABELS.exact?.[folderPath] ?? FOLDER_LABELS.segment?.[name] ?? name
+}
 
 export interface PageNode {
   type: 'page'
@@ -14,6 +49,8 @@ export interface PageNode {
 
 export interface FolderNode {
   type: 'folder'
+  /** 该目录显示名(汉化);未配置时等于路径段 */
+  label?: string
   children: TreeStructure
   /** 该目录下(递归)的页面总数 */
   count: number
@@ -42,6 +79,11 @@ function astroTitle(source: string, fallback: string): string {
 /** ios/personal/privacy → privacy */
 function basename(path: string): string {
   return path.slice(path.lastIndexOf('/') + 1)
+}
+
+/** 路径段前 i+1 位拼回相对路径,如 ['ios', 'personal'], 1 → ios/personal */
+function folderPath(parts: string[], i: number): string {
+  return parts.slice(0, i + 1).join('/')
 }
 
 // —— 收集所有页面 ——
@@ -86,8 +128,8 @@ async function collectIntlPages(): Promise<PageNode[]> {
 
 // —— 组装成树 ——
 
-function createFolder(): FolderNode {
-  return { type: 'folder', children: {}, count: 0 }
+function createFolder(path: string, name: string): FolderNode {
+  return { type: 'folder', label: folderLabel(path, name), children: {}, count: 0 }
 }
 
 function insert(tree: TreeStructure, page: PageNode): void {
@@ -104,9 +146,12 @@ function insert(tree: TreeStructure, page: PageNode): void {
     }
 
     const existing = level[part]
-    const folder = existing?.type === 'folder' ? existing : createFolder()
-    level[part] = folder
-    level = folder.children
+    if (existing?.type !== 'folder') {
+      // 新目录:按「到当前层为止的完整路径 + 目录段名」解析显示名
+      const folder = createFolder(folderPath(parts, i), part)
+      level[part] = folder
+    }
+    level = (level[part] as FolderNode).children
   }
 }
 

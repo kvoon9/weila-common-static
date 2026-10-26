@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { PageNode, TreeNode, TreeStructure } from '~/shared/page-tree'
+import { LANG_LABELS } from '~/shared/intl'
 import PageTree from './PageTree.vue'
 
 interface Props {
@@ -19,8 +20,10 @@ const currentPath = computed(() => {
 
 const page = computed(() => props.item.type === 'page' ? props.item as PageNode : null)
 
-/** 语言徽标:多语言文档显示其实际存在的语言,单语页不显示 */
-const langBadges = computed(() => page.value?.langs ?? [])
+/** 语言徽标:多语言文档显示其实际存在的语言,单语页不显示;文案用语言显示名 */
+const langBadges = computed(() =>
+  (page.value?.langs ?? []).map(lang => LANG_LABELS[lang] ?? lang),
+)
 
 function toggleFolder(event: Event) {
   // 阻止默认行为,让我们自己控制展开/折叠
@@ -50,7 +53,7 @@ const base = import.meta.env.BASE_URL
           <span class="folder-icon">
             {{ isOpen ? '📂' : '📁' }}
           </span>
-          <span class="folder-name">{{ name }}</span>
+          <span class="folder-name">{{ item.label ?? name }}</span>
           <span v-if="item.count" class="folder-count">{{ item.count }}</span>
         </summary>
         <div class="folder-content">

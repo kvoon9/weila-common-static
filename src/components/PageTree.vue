@@ -11,7 +11,7 @@ interface Props {
 const props = defineProps<Props>()
 
 // 排序:目录在前、页面在后;同类型按展示文案排序
-// (目录比目录名,页面比文章标题;都按中文/英文的自然顺序)
+// (目录用汉化显示名,页面比文章标题;都按中文/英文的自然顺序)
 const sortedEntries = computed(() => {
   return Object.entries(props.tree).sort(([nameA, a], [nameB, b]) => {
     if (a.type === 'folder' && b.type === 'page')
@@ -19,8 +19,8 @@ const sortedEntries = computed(() => {
     if (a.type === 'page' && b.type === 'folder')
       return 1
 
-    const labelA = a.type === 'page' ? a.title : nameA
-    const labelB = b.type === 'page' ? b.title : nameB
+    const labelA = a.type === 'page' ? a.title : (a.label ?? nameA)
+    const labelB = b.type === 'page' ? b.title : (b.label ?? nameB)
     return labelA.localeCompare(labelB, 'zh-Hans-CN')
   })
 })

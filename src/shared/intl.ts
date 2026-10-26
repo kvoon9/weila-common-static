@@ -60,3 +60,10 @@ export async function loadIntlDocs(): Promise<Map<string, LangDoc>> {
 export function pickDefaultLang(doc: Pick<LangDoc, 'langs'>): string {
   return doc.langs.includes(DEFAULT_LOCALE) ? DEFAULT_LOCALE : doc.langs[0] ?? DEFAULT_LOCALE
 }
+
+/** 语言显示名(切换器、语言徽标共用);语言清单本身来自 astro.config.ts 的 i18n.locales */
+export const LANG_LABELS: Record<string, string> = {
+  'zh-CN': '简体中文',
+  'zh-TW': '繁體中文',
+  'en': 'English',
+}

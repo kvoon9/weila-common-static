@@ -13,15 +13,8 @@
 // 文档来自 Astro Content Layer(源文件 src/content/intl/<文档路径>/<语言>.md,
 // 见 src/content.config.ts),构建期内嵌该文档全部语言版本,由内联脚本切换显示;
 // 无 JS 环境下默认展示站点默认语言(渐进增强)。
-import { DEFAULT_LOCALE, loadIntlDocs, pickDefaultLang } from '~/shared/intl'
+import { DEFAULT_LOCALE, LANG_LABELS, loadIntlDocs, pickDefaultLang } from '~/shared/intl'
 import 'github-markdown-css/github-markdown.css'
-
-// 语言切换器文案;语言清单本身来自 astro.config.ts 的 i18n.locales
-const LANG_LABELS: Record<string, string> = {
-  'zh-CN': '简体中文',
-  'zh-TW': '繁體中文',
-  'en': 'English',
-}
 
 // 每篇文档生成一个干净裸路径页面。
 // NOTE: Astro 会把 getStaticPaths 单独抽取执行,不能引用模块顶层变量,这里独立加载。
