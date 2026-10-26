@@ -3,10 +3,12 @@
 //
 // URL 规范:干净的裸路径(/common/intl/ios/personal/license),不携带语言信息。
 // 语言解析优先级(客户端,构建后生效):
-//   1. App WebView bridge:get-page-params → data.lang(参考 vois-app-webview-next)
-//   2. localStorage 缓存的上一次选择(减少 App 外场景的首屏闪烁)
-//   3. navigator.language 兜底(浏览器场景)
-//   4. 以上都失败 → i18n.defaultLocale
+//   1. ?lang=xx 显式覆盖(仅兼容旧链接,新链接不要再携带):合法时同步生效、
+//      跳过 bridge、不写 localStorage;非法值或该文档不支持的语言静默忽略
+//   2. App WebView bridge:get-page-params → data.lang(参考 vois-app-webview-next)
+//   3. localStorage 缓存的上一次选择(减少 App 外场景的首屏闪烁)
+//   4. navigator.language 兜底(浏览器场景)
+//   5. 以上都失败 → i18n.defaultLocale
 //
 // 文档来自 Astro Content Layer(源文件 src/content/intl/<文档路径>/<语言>.md,
 // 见 src/content.config.ts),构建期内嵌该文档全部语言版本,由内联脚本切换显示;
@@ -185,7 +187,7 @@ const defaultLang = doc ? pickDefaultLang(doc) : DEFAULT_LOCALE
       })(window)
     </script>
 
-    <!-- 页面语言逻辑:bridge > localStorage 缓存 > navigator > 站点默认语言 -->
+    <!-- 页面语言逻辑:?lang=(旧链接兼容)> bridge > localStorage 缓存 > navigator > 站点默认语言 -->
     <script is:inline define:vars={{ langs, titles, defaultLang, pageParam: doc?.path ?? '' }}>
       ;(function () {
         'use strict'
@@ -256,6 +258,20 @@ const defaultLang = doc ? pickDefaultLang(doc) : DEFAULT_LOCALE
         }
 
         initDom()
+
+        // —— 阶段零:?lang=xx 显式覆盖(仅兼容旧链接,新链接不要再携带) ——
+        // URL 是最显式的意图:合法时同步生效,不再询问 bridge,也不写 localStorage
+        // (与移除前的行为一致);非法值或该文档不支持的语言静默忽略,走常规解析。
+        var qm = location.search.match(/[?&]lang=([^&]+)/)
+        if (qm) {
+          try {
+            var forced = pick(decodeURIComponent(qm[1]))
+            if (forced) {
+              applyLang(forced)
+              return
+            }
+          } catch (e) {}
+        }
 
         // —— 阶段一(同步):缓存 > navigator,先给出一个合理的首屏语言 ——
         applyLang(pick(readCache()) || pick(navigator.language || navigator.userLanguage || '') || fallbackLang)

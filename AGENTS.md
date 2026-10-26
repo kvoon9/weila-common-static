@@ -25,10 +25,11 @@
 
 - 每篇文档只生成**一个干净裸路径**页面（如 `/intl/ios/personal/license`），构建期内嵌该文档全部语言版本，客户端切换显示；无 JS 环境默认展示 `i18n.defaultLocale`
 - 语言解析优先级（客户端内联脚本）：
-  1. **App WebView bridge**：`get-page-params` → `data.lang`（`zh-CN`/`zh-TW`/`en`），内联迷你实现见下
-  2. `localStorage.voisIntlLang`：记住用户上一次的选择，减少首屏闪烁
-  3. `navigator.language` 兜底（浏览器场景），归一化后仍不支持则回退 `i18n.defaultLocale`
-- **已废弃、不要再加回来**：旧版语言后缀 URL（`license_zh-CN`）与 `?lang=xx` 均已移除，前者现在直接 404（已确认无存量链接），后者被静默忽略
+  1. `?lang=xx` 显式覆盖（**仅兼容旧链接，新链接不要再携带**）：合法且该文档支持时同步生效，跳过 bridge、不写 localStorage；非法值或该文档不支持的语言静默忽略，走常规解析
+  2. **App WebView bridge**：`get-page-params` → `data.lang`（`zh-CN`/`zh-TW`/`en`），内联迷你实现见下
+  3. `localStorage.voisIntlLang`：记住用户上一次的选择，减少首屏闪烁
+  4. `navigator.language` 兜底（浏览器场景），归一化后仍不支持则回退 `i18n.defaultLocale`
+- **已废弃、不要再加回来**：旧版语言后缀 URL（`license_zh-CN`）已移除，现在直接 404（已确认无存量链接）；`?lang=xx` 仅作为旧链接兼容保留（见上面优先级第 1 条），不要在新入口/分享文案里拼它
 - 文档没有的语言版本自动降级到 `i18n.defaultLocale`
 - 语言切换器（右上角）由页面按该文档可用语言**自动生成**
 
