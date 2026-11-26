@@ -1,59 +1,13 @@
 ---
-// 站点首页:自动生成页面导航树。
-// 树的构建(含每页标题、目录计数)在 ~/shared/page-tree 里,与 intl 文档共用数据源。
-import PageTree from '~/components/PageTree.vue'
-import { loadPageTree } from '~/shared/page-tree'
+// 站点根页就是文档编辑器:左侧文件树、中间源码、右侧预览。
+// 文档页右上角的「打开编辑器」通过 ?file= 深链定位到具体文件。
+import EditorApp from '~/components/editor/EditorApp.vue'
+import EditorLayout from '~/layouts/EditorLayout.astro'
+import { loadEditorFiles } from '~/shared/editor-files'
 
-// 单语页面(走 Typo.astro)与多语言文档(走 Content Layer + bridge)分开展示,
-// 避免 /ios 与 /intl/ios 这类同名目录被误认为同一个
-const { plain, intl } = await loadPageTree()
-
-function countOf(tree: typeof plain): number {
-  return Object.values(tree).reduce((sum, node) => sum + (node.type === 'page' ? 1 : node.count), 0)
-}
-
-const totalPages = countOf(plain) + countOf(intl)
+const files = loadEditorFiles()
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Weila Static</title>
-  </head>
-  <body class="font-sans p-5 bg-gray-50">
-    <div class="mx-auto p-6 rounded-lg bg-white max-w-4xl shadow-sm">
-      <div class="mb-8 pb-4 text-center border-b border-gray-200">
-        <h1 class="text-2xl text-gray-800 font-bold mb-2">Weila Static</h1>
-        <p class="text-gray-600 m-0">公共静态文档导航 · 共 {totalPages} 篇</p>
-      </div>
-
-      <div class="tree-container space-y-8">
-        <section class="board">
-          <h2 class="board-title">
-            多语言文档 <span class="board-note">语言由 App 注入 · 同一链接自适应</span>
-          </h2>
-          <PageTree tree={intl} />
-        </section>
-
-        <section class="board">
-          <h2 class="board-title">
-            单语页面 <span class="board-note">仅中文</span>
-          </h2>
-          <PageTree tree={plain} />
-        </section>
-      </div>
-    </div>
-  </body>
-</html>
-
-<style>
-  .board-title {
-    @apply mb-3 pb-2 text-gray-500 text-sm font-semibold tracking-wide border-b border-gray-200;
-  }
-
-  .board-note {
-    @apply ml-2 text-gray-400 text-xs font-normal;
-  }
-</style>
+<EditorLayout>
+  <EditorApp client:only="vue" files={files} />
+</EditorLayout>
