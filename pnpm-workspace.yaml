@@ -4,6 +4,9 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   # 官方包（npm CLI 团队签名），仅因发布早于 attestation 时代而被 no-downgrade 误报
   - semver@6.3.1
+  # Pierre 团队 2.x 起换了发布流水线，暂无 npm provenance，与 1.x 相比触发 no-downgrade。
+  # 只排除这一个精确版本，@pierre/diffs 的组件依赖它。
+  - '@pierre/theme@2.1.0'
 
 shellEmulator: true
 

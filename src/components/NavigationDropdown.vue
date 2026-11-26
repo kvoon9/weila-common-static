@@ -45,18 +45,18 @@ const base = import.meta.env.BASE_URL
 </script>
 
 <template>
-  <div ref="dropdownRef" class="fixed top-4 right-4 z-50">
-    <!-- 下拉按钮 -->
+  <div ref="dropdownRef" class="relative">
+    <!-- 下拉按钮(与复制/编辑器按钮同规格:2.25rem 高的胶囊) -->
     <button
       type="button"
-      class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg transition-all duration-200 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+      class="flex items-center gap-2 px-3 py-0 bg-white rounded-full shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg transition-all duration-200 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 h-9 text-sm"
       @click="toggleDropdown"
       :aria-expanded="isOpen"
       aria-label="导航菜单"
     >
-      <span class="text-lg">📄</span>
-      <span class="font-medium text-gray-700">Docs</span>
-      <span class="text-xs transition-transform duration-200" :style="{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
+      <span class="text-gray-500 text-sm">📄</span>
+      <span class="text-gray-600">Docs</span>
+      <span class="text-gray-400 text-xs transition-transform duration-200" :style="{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
     </button>
 
     <!-- 下拉菜单 -->
