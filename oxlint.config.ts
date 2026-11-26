@@ -26,7 +26,6 @@ export default defineConfig({
     'dist/**',
     'node_modules/**',
     '.astro/**',
-    '.void/**',
     '.wrangler/**',
     'public/helpdoc/**',
     'src/vender/**',
