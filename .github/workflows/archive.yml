@@ -1,5 +1,3 @@
-# .github/workflows/release.yml
-
 name: Release
 
 permissions:
@@ -21,20 +19,16 @@ jobs:
       - name: Set node
         uses: actions/setup-node@v7
         with:
-          registry-url: https://registry.npmjs.org/
           node-version: lts/*
 
-      - name: Install @antfu/ni
-        run: npm i -g @antfu/ni
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Install dependenies
-        run: nci
-
-      - name: Build package
-        run: nr build
+      - name: Build
+        run: pnpm build
 
       - name: Create archive
-        run: nr archive
+        run: pnpm archive
 
       - run: npx changelogithub --assets pkg/*.tar.gz
         env:
