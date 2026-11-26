@@ -2,7 +2,6 @@
 import { VuePDF, usePDF } from '@tato30/vue-pdf'
 
 const { pdf, pages } = usePDF('/license.pdf')
-
 </script>
 
 <template>

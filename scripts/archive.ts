@@ -9,11 +9,9 @@ async function run() {
 
   const filepath = resolve(outputDir, filename)
 
-  if (existsSync(filepath))
-    await $`rm ${filepath}`
+  if (existsSync(filepath)) await $`rm ${filepath}`
 
-  if (!existsSync(outputDir))
-    mkdirSync(outputDir)
+  if (!existsSync(outputDir)) mkdirSync(outputDir)
 
   await $`tar -czf ${filepath} -C dist .`
 

@@ -56,21 +56,17 @@ const base = import.meta.env.BASE_URL
     >
       <span class="text-gray-500 text-sm">📄</span>
       <span class="text-gray-600">Docs</span>
-      <span class="text-gray-400 text-xs transition-transform duration-200" :style="{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }">▼</span>
+      <span
+        class="text-gray-400 text-xs transition-transform duration-200"
+        :style="{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }"
+        >▼</span
+      >
     </button>
 
     <!-- 下拉菜单 -->
-    <div
-      v-if="isOpen"
-      absolute right-0
-      :style="{ animation: 'fade-in 0.2s ease-out' }"
-    >
-      <ul >
-        <li
-          v-for="item in navigation"
-          :key="item.url"
-          class="bg-neutral-50 border-b border-gray-100 last:border-b-0"
-        >
+    <div v-if="isOpen" absolute right-0 :style="{ animation: 'fade-in 0.2s ease-out' }">
+      <ul>
+        <li v-for="item in navigation" :key="item.url" class="bg-neutral-50 border-b border-gray-100 last:border-b-0">
           <a
             :href="`${base}${item.url}`"
             class="flex items-center gap-2 px-4 py-3 text-gray-700 no-underline transition-colors duration-150 hover:bg-gray-50 hover:text-gray-900 w-full text-left whitespace-nowrap"

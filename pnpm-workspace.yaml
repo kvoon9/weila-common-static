@@ -15,3 +15,5 @@ allowBuilds:
   core-js: false
   # vite / astro 构建链必需
   esbuild: true
+  # cloudflare adapter / void 本地运行时
+  workerd: true

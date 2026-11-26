@@ -14,10 +14,8 @@ const props = defineProps<Props>()
 // (目录用汉化显示名,页面比文章标题;都按中文/英文的自然顺序)
 const sortedEntries = computed(() => {
   return Object.entries(props.tree).sort(([nameA, a], [nameB, b]) => {
-    if (a.type === 'folder' && b.type === 'page')
-      return -1
-    if (a.type === 'page' && b.type === 'folder')
-      return 1
+    if (a.type === 'folder' && b.type === 'page') return -1
+    if (a.type === 'page' && b.type === 'folder') return 1
 
     const labelA = a.type === 'page' ? a.title : (a.label ?? nameA)
     const labelB = b.type === 'page' ? b.title : (b.label ?? nameB)
@@ -34,12 +32,6 @@ const sortedEntries = computed(() => {
 
 <template>
   <div class="page-tree">
-    <TreeItem
-      v-for="[name, item] in sortedEntries"
-      :key="name"
-      :name="name"
-      :item="item"
-      :path="path"
-    />
+    <TreeItem v-for="[name, item] in sortedEntries" :key="name" :name="name" :item="item" :path="path" />
   </div>
 </template>

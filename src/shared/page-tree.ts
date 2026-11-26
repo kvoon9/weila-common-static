@@ -9,13 +9,13 @@ import { DEFAULT_LOCALE, loadIntlDocs } from './intl'
  * - 段名:同名目录共用(如 personal/corp 这类与平台无关的分层)
  * 未配置的目录保持原样,新增目录不需要动这里。
  */
-const FOLDER_LABELS: { exact?: Record<string, string>, segment?: Record<string, string> } = {
+const FOLDER_LABELS: { exact?: Record<string, string>; segment?: Record<string, string> } = {
   exact: {
     // intl 树的合成根目录(分区标题已说明「多语言」,目录名不再重复)
-    'intl': 'App WebView 文档',
-    'ios': 'iOS 版 App',
-    'android': 'Android 版 App',
-    'web': 'Web 版',
+    intl: 'App WebView 文档',
+    ios: 'iOS 版 App',
+    android: 'Android 版 App',
+    web: 'Web 版',
     'intl/ios': 'iOS 版 App',
     'intl/android': 'Android 版 App',
     'intl/web': 'Web 版',
@@ -27,14 +27,14 @@ const FOLDER_LABELS: { exact?: Record<string, string>, segment?: Record<string, 
     'android-next': 'Android 版 VoisChat',
     'ios-next': 'iOS 版 VoisChat',
     'corp-web': 'Web 企业版',
-    'corp': '企业版',
-    'personal': '个人版',
+    corp: '企业版',
+    personal: '个人版',
   },
 }
 
-/** dirPath 到当前目录为止的相对路径,如 ios/personal;folderPath 加上目录名 */
-function folderLabel(folderPath: string, name: string): string {
-  return FOLDER_LABELS.exact?.[folderPath] ?? FOLDER_LABELS.segment?.[name] ?? name
+/** dirPath 到当前目录为止的相对路径,如 ios/personal;加上目录名得到显示名 */
+function folderLabel(dirPath: string, name: string): string {
+  return FOLDER_LABELS.exact?.[dirPath] ?? FOLDER_LABELS.segment?.[name] ?? name
 }
 
 export interface PageNode {
@@ -62,12 +62,12 @@ export type TreeStructure = Record<string, TreeNode>
 // —— 单页标题提取 ——
 
 interface MarkdownModule {
-  getHeadings?: () => { depth: number, text: string }[]
+  getHeadings?: () => { depth: number; text: string }[]
 }
 
 /** md 页面:标题取正文首个 h1 */
 function markdownTitle(mod: MarkdownModule, fallback: string): string {
-  return mod.getHeadings?.().find(h => h.depth === 1)?.text ?? fallback
+  return mod.getHeadings?.().find((h) => h.depth === 1)?.text ?? fallback
 }
 
 /** astro 页面:标题取 <Layout title="..."> ;没有则回退到文件名 */
@@ -158,16 +158,14 @@ function insert(tree: TreeStructure, page: PageNode): void {
 /** 递归填充每个目录下的页面总数 */
 function fillCounts(tree: TreeStructure): number {
   let total = 0
-  for (const node of Object.values(tree))
-    total += node.type === 'page' ? 1 : fillCounts(node.children)
+  for (const node of Object.values(tree)) total += node.type === 'page' ? 1 : fillCounts(node.children)
   return total
 }
 
 function applyCounts(tree: TreeStructure): number {
   const total = fillCounts(tree)
   for (const node of Object.values(tree)) {
-    if (node.type === 'folder')
-      node.count = applyCounts(node.children)
+    if (node.type === 'folder') node.count = applyCounts(node.children)
   }
   return total
 }
@@ -177,14 +175,12 @@ function applyCounts(tree: TreeStructure): number {
  * 单语页面与 intl 多语言文档分开返回:两者都可能有 ios / web 这类同名目录,
  * 混在一棵树里会被误认为同一来源。
  */
-export async function loadPageTree(): Promise<{ plain: TreeStructure, intl: TreeStructure }> {
+export async function loadPageTree(): Promise<{ plain: TreeStructure; intl: TreeStructure }> {
   const plain: TreeStructure = {}
   const intl: TreeStructure = {}
 
-  for (const page of collectPlainPages())
-    insert(plain, page)
-  for (const page of await collectIntlPages())
-    insert(intl, page)
+  for (const page of collectPlainPages()) insert(plain, page)
+  for (const page of await collectIntlPages()) insert(intl, page)
 
   applyCounts(plain)
   applyCounts(intl)

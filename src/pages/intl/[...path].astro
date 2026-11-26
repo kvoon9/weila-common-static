@@ -28,7 +28,7 @@ const rawSources = import.meta.glob('~/content/intl/**/*.md', {
 // NOTE: Astro 会把 getStaticPaths 单独抽取执行,不能引用模块顶层变量,这里独立加载。
 export async function getStaticPaths() {
   const all = await loadIntlDocs()
-  return [...all.keys()].map(path => ({ params: { path } }))
+  return [...all.keys()].map((path) => ({ params: { path } }))
 }
 
 const documents = await loadIntlDocs()
@@ -39,12 +39,11 @@ const titles = doc?.titles ?? {}
 const defaultLang = doc ? pickDefaultLang(doc) : DEFAULT_LOCALE
 
 // 「复制 Markdown / 打开编辑器」按钮的数据:当前文档每种语言的源码与编辑器文件 id
-const copySources: Record<string, { markdown: string, editorPath: string }> = {}
+const copySources: Record<string, { markdown: string; editorPath: string }> = {}
 for (const lang of langs) {
   const suffix = `content/intl/${doc!.path}/${lang}.md`
   const source = Object.entries(rawSources).find(([file]) => file.endsWith(suffix))
-  if (source != null)
-    copySources[lang] = { markdown: source[1], editorPath: `intl/${doc!.path}/${lang}.md` }
+  if (source != null) copySources[lang] = { markdown: source[1], editorPath: `intl/${doc!.path}/${lang}.md` }
 }
 ---
 
@@ -60,13 +59,11 @@ for (const lang of langs) {
   <body class="markdown-body">
     <!-- 右上角操作区:复制/编辑器按钮与语言切换同一行、同一套胶囊视觉 -->
     <div id="page-actions">
-      {Object.keys(copySources).length > 0 && (
-        <CopyEditButton client:load sources={copySources} />
-      )}
+      {Object.keys(copySources).length > 0 && <CopyEditButton client:load sources={copySources} />}
 
       {langs.length > 1 && (
         <div id="lang-switcher" role="group" aria-label="语言 / Language">
-          {langs.map(lang => (
+          {langs.map((lang) => (
             <button type="button" data-lang={lang} aria-pressed={lang === defaultLang ? 'true' : 'false'}>
               {LANG_LABELS[lang] ?? lang}
             </button>
@@ -100,9 +97,16 @@ for (const lang of langs) {
 
         var HANDLER_NAME = 'uniBridgeCall'
 
-        function ua() { return (global.navigator && global.navigator.userAgent) || '' }
-        function isAndroid() { var u = ua(); return u.indexOf('Android') !== -1 || u.indexOf('Adr') !== -1 }
-        function isIOS() { return /\(i[^;]+;( U;)? CPU.+Mac OS X/.test(ua()) }
+        function ua() {
+          return (global.navigator && global.navigator.userAgent) || ''
+        }
+        function isAndroid() {
+          var u = ua()
+          return u.indexOf('Android') !== -1 || u.indexOf('Adr') !== -1
+        }
+        function isIOS() {
+          return /\(i[^;]+;( U;)? CPU.+Mac OS X/.test(ua())
+        }
 
         function debugLang() {
           try {
@@ -111,7 +115,9 @@ for (const lang of langs) {
           } catch (e) {}
           return null
         }
-        function isSupportBridge() { return isAndroid() || isIOS() || debugLang() !== null }
+        function isSupportBridge() {
+          return isAndroid() || isIOS() || debugLang() !== null
+        }
 
         // —— 等待原生通道注入 ——
         function whenAndroid() {
@@ -121,25 +127,39 @@ for (const lang of langs) {
               if (done) return
               done = true
               var wvjb = global.WebViewJavascriptBridge
-              try { wvjb.init(function (_msg, cb) { cb({ 'Javascript Responds': 'Wee!' }) }) } catch (e) {}
+              try {
+                wvjb.init(function (_msg, cb) {
+                  cb({ 'Javascript Responds': 'Wee!' })
+                })
+              } catch (e) {}
               resolve(wvjb)
             }
             if (global.WebViewJavascriptBridge) return finish()
-            document.addEventListener('WebViewJavascriptBridgeReady', function () {
-              if (global.WebViewJavascriptBridge) finish()
-            }, { once: true })
+            document.addEventListener(
+              'WebViewJavascriptBridgeReady',
+              function () {
+                if (global.WebViewJavascriptBridge) finish()
+              },
+              { once: true },
+            )
           })
         }
         function whenIOS() {
           return new Promise(function (resolve) {
             function has() {
-              return !!(global.webkit && global.webkit.messageHandlers
-                && global.webkit.messageHandlers[HANDLER_NAME]
-                && global.webkit.messageHandlers[HANDLER_NAME].postMessage)
+              return !!(
+                global.webkit &&
+                global.webkit.messageHandlers &&
+                global.webkit.messageHandlers[HANDLER_NAME] &&
+                global.webkit.messageHandlers[HANDLER_NAME].postMessage
+              )
             }
             if (has()) return resolve()
             var t = setInterval(function () {
-              if (has()) { clearInterval(t); resolve() }
+              if (has()) {
+                clearInterval(t)
+                resolve()
+              }
             }, 50)
           })
         }
@@ -149,15 +169,22 @@ for (const lang of langs) {
         function createNativeCall() {
           if (isAndroid()) {
             return function (type, data, onResponse) {
-              global.WebViewJavascriptBridge.callHandler(HANDLER_NAME, JSON.stringify({ type: type, data: data }), onResponse)
+              global.WebViewJavascriptBridge.callHandler(
+                HANDLER_NAME,
+                JSON.stringify({ type: type, data: data }),
+                onResponse,
+              )
             }
           }
           if (isIOS()) {
             return function (type, data, onResponse) {
               var payload = { type: type, data: data }
               if (onResponse) {
-                var name = 'bridge_callback_' + String(type).replace(/[^A-Za-z0-9_$]/g, '_') + '_' + (++cbSeq)
-                global[name] = function (raw) { delete global[name]; onResponse(raw) }
+                var name = 'bridge_callback_' + String(type).replace(/[^A-Za-z0-9_$]/g, '_') + '_' + ++cbSeq
+                global[name] = function (raw) {
+                  delete global[name]
+                  onResponse(raw)
+                }
                 payload.callbackName = name
               }
               global.webkit.messageHandlers[HANDLER_NAME].postMessage(JSON.stringify(payload))
@@ -165,7 +192,8 @@ for (const lang of langs) {
           }
           // 桌面调试:模拟原生 get-page-params 应答
           return function (type, data, onResponse) {
-            if (onResponse) onResponse(JSON.stringify({ errcode: 0, errmsg: '', data: { lang: debugLang() || 'zh-CN' } }))
+            if (onResponse)
+              onResponse(JSON.stringify({ errcode: 0, errmsg: '', data: { lang: debugLang() || 'zh-CN' } }))
           }
         }
 
@@ -173,7 +201,11 @@ for (const lang of langs) {
           return function (type, data) {
             return new Promise(function (resolve, reject) {
               nativeCall(type, data == null ? {} : data, function (raw) {
-                try { resolve(JSON.parse(raw)) } catch (e) { reject(new Error('bridge: invalid response')) }
+                try {
+                  resolve(JSON.parse(raw))
+                } catch (e) {
+                  reject(new Error('bridge: invalid response'))
+                }
               })
             })
           }
@@ -190,12 +222,18 @@ for (const lang of langs) {
           waitStarted = true
           if (!isSupportBridge()) return
           // 桌面调试环境(isAndroid/isIOS 均假但 debug 开)直接就绪,无需等待原生注入
-          var p = isAndroid() ? whenAndroid() : (isIOS() ? whenIOS() : Promise.resolve())
+          var p = isAndroid() ? whenAndroid() : isIOS() ? whenIOS() : Promise.resolve()
           p.then(function () {
             ready = { request: makeRequest(createNativeCall()) }
             var ls = listeners.splice(0)
             for (var i = 0; i < ls.length; i++) {
-              try { ls[i](ready) } catch (e) { setTimeout(function () { throw e }) }
+              try {
+                ls[i](ready)
+              } catch (e) {
+                setTimeout(function () {
+                  throw e
+                })
+              }
             }
           })
         }
@@ -218,8 +256,15 @@ for (const lang of langs) {
           var s = raw.trim()
           if (!s) return null
           if (s === 'zh-CN' || s === 'zh-Hans' || s === 'zh-Hans-CN' || s === 'zh' || s === 'zh-rCN') return 'zh-CN'
-          if (s === 'zh-TW' || s === 'zh-rTW' || s === 'zh-HK' || s === 'zh-MO'
-            || s === 'zh-Hant' || s.indexOf('zh-Hant') === 0) return 'zh-TW'
+          if (
+            s === 'zh-TW' ||
+            s === 'zh-rTW' ||
+            s === 'zh-HK' ||
+            s === 'zh-MO' ||
+            s === 'zh-Hant' ||
+            s.indexOf('zh-Hant') === 0
+          )
+            return 'zh-TW'
           if (s.toLowerCase().indexOf('en') === 0) return 'en'
           return null
         }
@@ -231,10 +276,16 @@ for (const lang of langs) {
         // 记住用户上一次的选择,减少下次进入时的首屏闪烁
         var CACHE_KEY = 'voisIntlLang'
         function readCache() {
-          try { return globalThis.localStorage ? globalThis.localStorage.getItem(CACHE_KEY) : null } catch (e) { return null }
+          try {
+            return globalThis.localStorage ? globalThis.localStorage.getItem(CACHE_KEY) : null
+          } catch (e) {
+            return null
+          }
         }
         function writeCache(lang) {
-          try { if (globalThis.localStorage) globalThis.localStorage.setItem(CACHE_KEY, lang) } catch (e) {}
+          try {
+            if (globalThis.localStorage) globalThis.localStorage.setItem(CACHE_KEY, lang)
+          } catch (e) {}
         }
 
         // —— DOM ——
@@ -247,7 +298,7 @@ for (const lang of langs) {
           applied = lang
           for (var i = 0; i < docLangs.length; i++) {
             var l = docLangs[i]
-            if (sections[l]) sections[l].hidden = (l !== lang)
+            if (sections[l]) sections[l].hidden = l !== lang
           }
           document.documentElement.lang = lang
           if (titles[lang]) document.title = titles[lang]
@@ -263,7 +314,7 @@ for (const lang of langs) {
           }
           var btns = document.querySelectorAll('#lang-switcher button')
           for (var k = 0; k < btns.length; k++) {
-            (function (btn) {
+            ;(function (btn) {
               buttons.push(btn)
               btn.onclick = function () {
                 var picked = btn.getAttribute('data-lang')
@@ -297,23 +348,28 @@ for (const lang of langs) {
 
         // —— 阶段二(异步):bridge 应答后以原生为准;库无超时机制,自行兜底 ——
         var settled = false
-        var timer = setTimeout(function () { settled = true }, 2000)
+        var timer = setTimeout(function () {
+          settled = true
+        }, 2000)
         window.VoisIntlBridge.onBridgeReady(function (bridge) {
           if (settled) return
-          bridge.request('get-page-params', { page: pageParam, params: ['lang'] }).then(function (res) {
-            clearTimeout(timer)
-            if (settled) return
-            settled = true
-            var lang = res && res.errcode === 0 && res.data && res.data.lang
-            var picked = pick(lang)
-            if (picked) {
-              applyLang(picked)
-              writeCache(picked)
-            }
-          }, function () {
-            clearTimeout(timer)
-            settled = true
-          })
+          bridge.request('get-page-params', { page: pageParam, params: ['lang'] }).then(
+            function (res) {
+              clearTimeout(timer)
+              if (settled) return
+              settled = true
+              var lang = res && res.errcode === 0 && res.data && res.data.lang
+              var picked = pick(lang)
+              if (picked) {
+                applyLang(picked)
+                writeCache(picked)
+              }
+            },
+            function () {
+              clearTimeout(timer)
+              settled = true
+            },
+          )
         })
       })()
     </script>
@@ -345,7 +401,9 @@ for (const lang of langs) {
     border: 1px solid #e5e7eb;
     border-radius: 9999px;
     background: #fff;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
 
   #lang-switcher button {
