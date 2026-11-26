@@ -12,7 +12,7 @@ import type {
 const ISSUE_ID = '739e2fbb6870000'
 const ROOT_TARGET_ID = '39e2d403b7d0e8'
 const PAGE_TITLE = '企业 API 手册'
-const TREE_PATH = 'src/shared/work-exported-docs.json'
+const DATA_PATH = 'src/shared/work-exported-docs.json'
 const SOURCE_URL = 'https://docs.apipost.net/docs/detail/739e2fbb6870000?target_id=39e2d403b7d0e8&locale=zh-cn'
 const DOC_URL = `https://docs.apipost.net/doc/down?issue_id=${ISSUE_ID}`
 
@@ -51,11 +51,6 @@ export type Manual = {
   pathNames: string[]
   updatedAt: string
   children: TreeNode[]
-}
-
-export type GeneratedFile = {
-  path: string
-  content: string
 }
 
 type RawRecord = Record<string, unknown>
@@ -316,7 +311,7 @@ function uniqueSlug(endpoint: string, used: Set<string>): string {
   return `${base}-${suffix}`
 }
 
-function buildSidebar(manual: Manual): { tree: SidebarItem[]; pages: ApiPage[] } {
+export function buildData(manual: Manual): WorkExportedDocsData {
   const used = new Set<string>()
   const pages: ApiPage[] = []
 
@@ -352,23 +347,14 @@ function buildSidebar(manual: Manual): { tree: SidebarItem[]; pages: ApiPage[] }
 
   const rootName = manual.pathNames.at(-1) ?? manual.title
   return {
-    tree: [{ title: rootName, description: '', kind: 'group', slug: null, children: build(manual.children) }],
-    pages,
-  }
-}
-
-export function renderSite(manual: Manual): GeneratedFile[] {
-  const { tree, pages } = buildSidebar(manual)
-  const data: WorkExportedDocsData = {
     title: manual.title,
     sourceUrl: manual.sourceUrl,
     projectName: manual.projectName,
     pathNames: manual.pathNames,
     updatedAt: manual.updatedAt,
-    tree,
+    tree: [{ title: rootName, description: '', kind: 'group', slug: null, children: build(manual.children) }],
     pages,
   }
-  return [{ path: TREE_PATH, content: `${JSON.stringify(data, null, 2)}\n` }]
 }
 
 async function fetchDoc(): Promise<unknown> {
@@ -391,22 +377,17 @@ async function writeFileAtomic(path: string, content: string): Promise<void> {
 
 async function main(argv: string[]): Promise<number> {
   try {
-    const files = renderSite(parseDoc(await fetchDoc()))
+    const content = `${JSON.stringify(buildData(parseDoc(await fetchDoc())), null, 2)}\n`
     if (argv.includes('--check')) {
-      const problems: string[] = []
-      for (const file of files) {
-        if ((await readText(file.path)) !== file.content) problems.push(file.path)
-      }
-      if (problems.length === 0) {
-        console.log('生成结果与上游一致')
+      if ((await readText(DATA_PATH)) === content) {
+        console.log(`${DATA_PATH} 与上游一致`)
         return 0
       }
-      console.error(`以下文件与上游不一致：\n${problems.map((path) => `- ${path}`).join('\n')}`)
-      console.error('请运行 pnpm sync:apipost 生成最新内容')
+      console.error(`${DATA_PATH} 与上游不一致，请运行 pnpm sync:apipost 生成最新内容`)
       return 1
     }
-    for (const file of files) await writeFileAtomic(file.path, file.content)
-    console.log(`已写入 ${files.length} 个文件`)
+    await writeFileAtomic(DATA_PATH, content)
+    console.log(`已写入 ${DATA_PATH}`)
     return 0
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))

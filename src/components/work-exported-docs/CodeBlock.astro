@@ -1,6 +1,5 @@
 ---
-import { preloadFile } from '@pierre/diffs/ssr'
-import { CODE_BLOCK_OPTIONS } from '~/shared/diffs-options'
+import { renderCodeBlock } from '~/shared/diffs-ssr'
 
 interface Props {
   code: string
@@ -9,15 +8,7 @@ interface Props {
 }
 
 const { code, label, filename = 'example.jsonc' } = Astro.props
-
-const { prerenderedHTML } = await preloadFile({
-  file: { name: filename, contents: code },
-  options: CODE_BLOCK_OPTIONS,
-})
-
-const html = prerenderedHTML
-  .replace(/<svg data-icon-sprite[\s\S]*?<\/svg>/g, '')
-  .replace(/<style[^>]*>[\s\S]*?<\/style>/g, '')
+const html = await renderCodeBlock(code, filename)
 ---
 
 <figure class="docs-code-block">

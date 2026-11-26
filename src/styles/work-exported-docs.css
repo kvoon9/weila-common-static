@@ -407,8 +407,7 @@
   margin: 0;
 }
 
-/* UnoCSS 注入的 Tailwind preflight 是无层样式,会覆盖 @pierre/diffs 在 @layer 里的 spacing。
-   在代码块作用域内恢复行号、行内容的 padding 和 gutter 分隔线。 */
+/* UnoCSS preflight 是无层的,会盖掉 @pierre/diffs 的分层 spacing。这里在代码块内恢复。 */
 .diffs-code [data-code] {
   padding-top: var(--diffs-gap-block, var(--diffs-gap-fallback));
   padding-bottom: max(0px, calc(var(--diffs-gap-block, var(--diffs-gap-fallback)) - var(--diffs-scrollbar-gutter)));

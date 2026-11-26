@@ -1,15 +1,8 @@
 ---
-import data from '~/shared/work-exported-docs.json'
-import type { WorkExportedDocsData } from '~/shared/work-exported-docs-types'
+import { manual } from '~/shared/work-exported-docs-data'
+import { methodClass, statusClass } from '~/shared/work-exported-docs-ui'
 
-const manual = data as WorkExportedDocsData
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`
-
-const METHODS = new Set(['get', 'post', 'put', 'patch', 'delete'])
-const methodClass = (method: string) =>
-  METHODS.has(method.toLowerCase()) ? `docs-method-${method.toLowerCase()}` : 'docs-method-default'
-const statusClass = (status: string) =>
-  status === '已完成' ? 'docs-status-done' : status === '开发中' ? 'docs-status-wip' : 'docs-status-default'
 ---
 
 <header>
