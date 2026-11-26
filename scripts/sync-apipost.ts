@@ -1,11 +1,14 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 const ISSUE_ID = '739e2fbb6870000'
 const ROOT_TARGET_ID = '39e2d403b7d0e8'
 const PAGE_TITLE = '企业 API 手册'
-const OUTPUT_PATH = 'src/pages/corp-api.md'
+const OUTPUT_DIR = 'src/pages/work-exported-docs'
+const PUBLIC_DIR = 'work-exported-docs'
+const TREE_PATH = 'src/shared/work-exported-docs.json'
+const LAYOUT_PATH = '~/layouts/WorkExportedDocs.astro'
 const SOURCE_URL = 'https://docs.apipost.net/docs/detail/739e2fbb6870000?target_id=39e2d403b7d0e8&locale=zh-cn'
 const DOC_URL = `https://docs.apipost.net/doc/down?issue_id=${ISSUE_ID}`
 
@@ -59,6 +62,25 @@ export type Manual = {
   pathNames: string[]
   updatedAt: string
   children: TreeNode[]
+}
+
+export type SidebarItem = {
+  title: string
+  description: string
+  url: string | null
+  children: SidebarItem[]
+}
+
+export type SidebarTree = {
+  title: string
+  sourceUrl: string
+  updatedAt: string
+  items: SidebarItem[]
+}
+
+export type GeneratedFile = {
+  path: string
+  content: string
 }
 
 type RawRecord = Record<string, unknown>
@@ -374,28 +396,20 @@ function exampleTitle(example: ResponseExample, index: number): string {
   return `**示例 ${index + 1}**`
 }
 
-function renderNode(node: TreeNode, level: number, blocks: string[]): void {
-  blocks.push(`${'#'.repeat(level)} ${textLine(node.name)}`)
-  const description = textLine(node.description)
-  if (description !== '') blocks.push(description)
-  if (node.kind === 'folder') {
-    for (const child of node.children) renderNode(child, level + 1, blocks)
-    return
-  }
+function pushApiDetail(blocks: string[], api: ApiNode): void {
+  blocks.push(`${codeSpan(api.method)} ${codeSpan(api.endpoint)}`)
+  if (api.markName !== null) blocks.push(`状态：**${textLine(api.markName)}**`)
+  pushParameterTable(blocks, 'Path 参数', api.pathParameters, true)
+  pushParameterTable(blocks, 'Query 参数', api.queryParameters, true)
+  pushParameterTable(blocks, 'Header 参数', api.headerParameters, true)
+  pushParameterTable(blocks, 'Cookie 参数', api.cookieParameters, true)
 
-  blocks.push(`${codeSpan(node.method)} ${codeSpan(node.endpoint)}`)
-  if (node.markName !== null) blocks.push(`状态：**${textLine(node.markName)}**`)
-  pushParameterTable(blocks, 'Path 参数', node.pathParameters, true)
-  pushParameterTable(blocks, 'Query 参数', node.queryParameters, true)
-  pushParameterTable(blocks, 'Header 参数', node.headerParameters, true)
-  pushParameterTable(blocks, 'Cookie 参数', node.cookieParameters, true)
-
-  if (node.body !== null) {
+  if (api.body !== null) {
     blocks.push('**请求 Body**')
-    blocks.push(fencedJsonc(node.body))
+    blocks.push(fencedJsonc(api.body))
   }
 
-  for (const [index, example] of node.examples.entries()) {
+  for (const [index, example] of api.examples.entries()) {
     if (example.raw === '' && !example.fields.some((field) => field.key !== '')) continue
     blocks.push(exampleTitle(example, index))
     if (example.raw !== '') blocks.push(fencedJsonc(example.raw))
@@ -403,15 +417,121 @@ function renderNode(node: TreeNode, level: number, blocks: string[]): void {
   }
 }
 
-export function renderManual(manual: Manual): string {
+function slugSegment(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function endpointSegments(endpoint: string): string[] {
+  return new URL(endpoint).pathname
+    .split('/')
+    .map(slugSegment)
+    .filter((segment) => segment !== '')
+}
+
+function uniqueSlug(endpoint: string, used: Set<string>): string {
+  const segments = endpointSegments(endpoint)
+  const base = segments.slice(-2).join('-') || 'api'
+  if (!used.has(base)) return base
+  for (let count = 3; count <= segments.length; count += 1) {
+    const candidate = segments.slice(-count).join('-')
+    if (!used.has(candidate)) return candidate
+  }
+  let suffix = 2
+  while (used.has(`${base}-${suffix}`)) suffix += 1
+  return `${base}-${suffix}`
+}
+
+function frontmatter(title: string): string {
+  return `---\nlayout: '${LAYOUT_PATH}'\ntitle: ${JSON.stringify(plain(title))}\n---`
+}
+
+type ApiPage = {
+  slug: string
+  api: ApiNode
+}
+
+function buildSidebar(manual: Manual): { sidebar: SidebarTree; pages: ApiPage[] } {
+  const used = new Set<string>()
+  const pages: ApiPage[] = []
+
+  const build = (nodes: TreeNode[]): SidebarItem[] =>
+    nodes.map((node) => {
+      if (node.kind === 'api') {
+        const slug = uniqueSlug(node.endpoint, used)
+        used.add(slug)
+        pages.push({ slug, api: node })
+        return {
+          title: node.name,
+          description: node.description,
+          url: `${PUBLIC_DIR}/${slug}/`,
+          children: [],
+        }
+      }
+      return {
+        title: node.name,
+        description: node.description,
+        url: null,
+        children: build(node.children),
+      }
+    })
+
+  const rootName = manual.pathNames.at(-1) ?? manual.title
+  return {
+    sidebar: {
+      title: manual.title,
+      sourceUrl: manual.sourceUrl,
+      updatedAt: manual.updatedAt,
+      items: [{ title: rootName, description: '', url: null, children: build(manual.children) }],
+    },
+    pages,
+  }
+}
+
+function renderSidebarList(items: SidebarItem[], depth: number): string[] {
+  const lines: string[] = []
+  for (const item of items) {
+    const indent = '  '.repeat(depth)
+    if (item.url === null) {
+      const description = plain(item.description) === '' ? '' : ` — ${textLine(item.description)}`
+      lines.push(`${indent}- **${textLine(item.title)}**${description}`)
+    } else {
+      lines.push(`${indent}- [${textLine(item.title)}](${item.url.slice(PUBLIC_DIR.length + 1)})`)
+    }
+    lines.push(...renderSidebarList(item.children, depth + 1))
+  }
+  return lines
+}
+
+function renderIndex(manual: Manual, sidebar: SidebarTree): string {
   const path = manual.pathNames.map((name) => textLine(name)).join(' / ')
   const blocks = [
-    "---\nlayout: '~/layouts/Typo.astro'\n---",
+    frontmatter(manual.title),
     `# ${textLine(manual.title)}`,
     `> 来源：[Apipost 文档「${path}」](${manual.sourceUrl})（${textLine(manual.projectName)}），上游更新于 ${manual.updatedAt}。`,
+    '## 目录',
+    renderSidebarList(sidebar.items, 0).join('\n'),
   ]
-  for (const node of manual.children) renderNode(node, 2, blocks)
   return `${blocks.join('\n\n')}\n`
+}
+
+function renderApiPage(api: ApiNode): string {
+  const blocks = [frontmatter(api.name), `# ${textLine(api.name)}`]
+  const description = textLine(api.description)
+  if (description !== '') blocks.push(description)
+  pushApiDetail(blocks, api)
+  return `${blocks.join('\n\n')}\n`
+}
+
+export function renderSite(manual: Manual): GeneratedFile[] {
+  const { sidebar, pages } = buildSidebar(manual)
+  return [
+    { path: `${OUTPUT_DIR}/index.md`, content: renderIndex(manual, sidebar) },
+    ...pages.map((page) => ({ path: `${OUTPUT_DIR}/${page.slug}.md`, content: renderApiPage(page.api) })),
+    { path: TREE_PATH, content: `${JSON.stringify(sidebar, null, 2)}\n` },
+  ]
 }
 
 async function fetchDoc(): Promise<unknown> {
@@ -420,25 +540,48 @@ async function fetchDoc(): Promise<unknown> {
   return response.json()
 }
 
+async function readText(path: string): Promise<string | null> {
+  return readFile(path, 'utf8').catch(() => null)
+}
+
+async function staleFiles(generated: Set<string>): Promise<string[]> {
+  const entries = await readdir(OUTPUT_DIR).catch(() => [] as string[])
+  return entries
+    .filter((name) => name.endsWith('.md'))
+    .map((name) => `${OUTPUT_DIR}/${name}`)
+    .filter((path) => !generated.has(path))
+    .sort()
+}
+
+async function writeFileAtomic(path: string, content: string): Promise<void> {
+  const directory = dirname(path)
+  await mkdir(directory, { recursive: true })
+  const temporary = join(directory, `.${basename(path)}.tmp`)
+  await writeFile(temporary, content)
+  await rename(temporary, path)
+}
+
 async function main(argv: string[]): Promise<number> {
   try {
-    const manual = parseDoc(await fetchDoc())
-    const markdown = renderManual(manual)
+    const files = renderSite(parseDoc(await fetchDoc()))
+    const generated = new Set(files.map((file) => file.path))
     if (argv.includes('--check')) {
-      const current = await readFile(OUTPUT_PATH, 'utf8').catch(() => null)
-      if (current === markdown) {
-        console.log(`${OUTPUT_PATH} 与上游一致`)
+      const problems: string[] = []
+      for (const file of files) {
+        if ((await readText(file.path)) !== file.content) problems.push(file.path)
+      }
+      problems.push(...(await staleFiles(generated)))
+      if (problems.length === 0) {
+        console.log('生成结果与上游一致')
         return 0
       }
-      console.error(`${OUTPUT_PATH} 与上游不一致，请运行 pnpm sync:apipost 生成最新内容`)
+      console.error(`以下文件与上游不一致：\n${problems.map((path) => `- ${path}`).join('\n')}`)
+      console.error('请运行 pnpm sync:apipost 生成最新内容')
       return 1
     }
-    const directory = dirname(OUTPUT_PATH)
-    await mkdir(directory, { recursive: true })
-    const temporary = join(directory, `.${basename(OUTPUT_PATH)}.tmp`)
-    await writeFile(temporary, markdown)
-    await rename(temporary, OUTPUT_PATH)
-    console.log(`已写入 ${OUTPUT_PATH}`)
+    for (const file of files) await writeFileAtomic(file.path, file.content)
+    for (const path of await staleFiles(generated)) await rm(path)
+    console.log(`已写入 ${files.length} 个文件`)
     return 0
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))

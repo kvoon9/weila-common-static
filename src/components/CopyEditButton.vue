@@ -9,10 +9,12 @@ export interface CopySource {
   /** Markdown 源码 */
   markdown: string
   /** 编辑器里的文件 id,如 intl/ios/personal/privacy/zh-CN.md */
-  editorPath: string
+  editorPath?: string
 }
 
-const props = defineProps<{ sources: Record<string, CopySource> }>()
+const props = defineProps<{ sources: Record<string, CopySource>; showEditor?: boolean }>()
+
+const showEditor = computed(() => props.showEditor !== false)
 
 const lang = ref('')
 const open = ref(false)
@@ -76,33 +78,43 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="currentEntry" ref="root" class="copy-edit-group">
+  <div v-if="currentEntry" ref="root" class="copy-edit-group" :class="{ 'no-editor': !showEditor }">
     <button type="button" class="copy-btn" :class="{ copied }" @click="copy">
       {{ copied ? '已复制' : '复制 Markdown' }}
     </button>
 
-    <button
-      type="button"
-      class="menu-trigger"
-      :aria-expanded="open"
-      aria-haspopup="menu"
-      aria-label="更多操作"
-      @click="open = !open"
-    >
-      <svg class="chevron" :class="{ open }" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-        <path
-          d="M2 3.5L5 6.5L8 3.5"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-    </button>
+    <template v-if="showEditor">
+      <button
+        type="button"
+        class="menu-trigger"
+        :aria-expanded="open"
+        aria-haspopup="menu"
+        aria-label="更多操作"
+        @click="open = !open"
+      >
+        <svg
+          class="chevron"
+          :class="{ open }"
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M2 3.5L5 6.5L8 3.5"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
 
-    <div v-if="open" class="menu" role="menu">
-      <a :href="editorHref" role="menuitem" class="menu-item" @click="open = false"> 打开编辑器 </a>
-    </div>
+      <div v-if="open" class="menu" role="menu">
+        <a :href="editorHref" role="menuitem" class="menu-item" @click="open = false"> 打开编辑器 </a>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -139,6 +151,11 @@ onBeforeUnmount(() => {
 
 .copy-btn.copied {
   color: #059669;
+}
+
+.copy-edit-group.no-editor .copy-btn {
+  border-right: 0;
+  border-radius: 9999px;
 }
 
 .menu-trigger {

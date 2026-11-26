@@ -1,0 +1,160 @@
+---
+import DocsTree from '~/components/DocsTree.astro'
+import CopyEditButton from '~/components/CopyEditButton.vue'
+import 'github-markdown-css/github-markdown.css'
+import tree from '~/shared/work-exported-docs.json'
+
+const { frontmatter } = Astro.props
+const title = frontmatter?.title || tree.title
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`
+const current = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`
+
+const mdSources = import.meta.glob('~/pages/work-exported-docs/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>
+
+const relative = current.slice(base.length)
+const slug = relative.replace(/^work-exported-docs\//, '').replace(/\/$/, '') || 'index'
+const sourceKey = Object.keys(mdSources).find((path) => path.endsWith(`/${slug}.md`))
+const sources = sourceKey ? { 'zh-CN': { markdown: mdSources[sourceKey], editorPath: '' } } : {}
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <meta name="generator" content={Astro.generator} />
+    <meta charset="utf-8" />
+    <title>{title} · {tree.title}</title>
+  </head>
+  <body>
+    <div class="docs-layout">
+      <aside class="docs-sidebar">
+        <a class="docs-brand" href={`${base}work-exported-docs/`}>
+          <span class="docs-brand-title">{tree.title}</span>
+          <span class="docs-brand-meta">更新于 {tree.updatedAt}</span>
+        </a>
+        <nav aria-label="文档目录">
+          <DocsTree
+            items={[{ title: '概览', description: '', url: 'work-exported-docs/', children: [] }, ...tree.items]}
+            current={current}
+          />
+        </nav>
+      </aside>
+
+      <div class="docs-content">
+        <div id="page-actions">{sourceKey && <CopyEditButton client:load sources={sources} showEditor={false} />}</div>
+
+        <article class="markdown-body docs-article">
+          <slot />
+        </article>
+      </div>
+    </div>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+  }
+
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  .docs-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 1.5rem 1rem;
+    border-right: 1px solid #d8dee4;
+    background: #f6f8fa;
+  }
+
+  .docs-brand {
+    display: block;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .docs-brand-title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .docs-brand-meta {
+    display: block;
+    margin-top: 0.25rem;
+    color: #57606a;
+    font-size: 0.75rem;
+  }
+
+  .docs-content {
+    position: relative;
+    min-width: 0;
+    padding: 3.5rem 2.5rem 4rem;
+    background: #fff;
+  }
+
+  .docs-article {
+    box-sizing: border-box;
+    max-width: 56rem;
+    margin: 0 auto;
+  }
+
+  #page-actions {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .docs-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .docs-sidebar {
+      position: static;
+      height: auto;
+      border-right: 0;
+      border-bottom: 1px solid #d8dee4;
+    }
+
+    .docs-content {
+      padding: 3.5rem 1rem 3rem;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .docs-sidebar {
+      border-color: #30363d;
+      background: #161b22;
+    }
+
+    .docs-brand-meta {
+      color: #8b949e;
+    }
+
+    .docs-content {
+      background: #0d1117;
+    }
+  }
+</style>

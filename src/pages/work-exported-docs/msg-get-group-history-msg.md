@@ -1,12 +1,9 @@
 ---
-layout: '~/layouts/Typo.astro'
+layout: '~/layouts/WorkExportedDocs.astro'
+title: "获取群历史消息"
 ---
 
-# 企业 API 手册
-
-> 来源：[Apipost 文档「WEBAPI / v2 / corp企业 / 企业api」](https://docs.apipost.net/docs/detail/739e2fbb6870000?target_id=39e2d403b7d0e8&locale=zh-cn)（微喇内部WEB接口），上游更新于 2026-11-26 16:21。
-
-## 获取群历史消息
+# 获取群历史消息
 
 `POST` `https://api.voischat.cn/v2/corpapi/msg/get-group-history-msg`
 
@@ -145,39 +142,5 @@ layout: '~/layouts/Typo.astro'
 {
 	"errcode": 45008,
 	"errmsg": "用户不是企业成员"
-}
-```
-
-## PTT转Audio
-
-`POST` `https://api.voischat.cn/v2/corpapi/msg/ptt2audio`
-
-状态：**开发中**
-
-**Query 参数**
-
-| 参数名 | 类型 | 必填 | 说明 | 示例值 |
-| --- | --- | --- | --- | --- |
-| `appid` | string | 是 | - | `kCRXXYUd6h3p` |
-| `sign` | string | 是 | - | `4d1705d1db0d1e4ee79e4a6c4959e657` |
-| `et` | string | 是 | - | `1795664919` |
-
-**请求 Body**
-
-```jsonc
-{
-    "url":"https://cdn.voischat.cn/weilacache/aud/corp/g/81000926/1795670995_3.ptt?duration=3", "format":"mp3"
-}
-```
-
-**成功（200）**
-
-```jsonc
-{
-	"errcode": 0,
-	"errmsg": "请求成功",
-	"data": {
-		"url": "https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795680837_b204e980.mp3"
-	}
 }
 ```

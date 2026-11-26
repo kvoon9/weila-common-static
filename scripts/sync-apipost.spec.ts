@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { parseDoc, renderManual, SyncError } from './sync-apipost.ts'
+import { parseDoc, renderSite, SyncError, type GeneratedFile } from './sync-apipost.ts'
 
 const SOURCE_LINE =
   '> 来源：[Apipost 文档「上游 / 分组 / 企业api」](https://docs.apipost.net/docs/detail/739e2fbb6870000?target_id=39e2d403b7d0e8&locale=zh-cn)（示例项目），上游更新于 2026-01-02 03:04。'
+const INDEX_PATH = 'src/pages/work-exported-docs/index.md'
+const API_A_PATH = 'src/pages/work-exported-docs/v2-a.md'
+const API_B_PATH = 'src/pages/work-exported-docs/v2-b.md'
+const TREE_PATH = 'src/shared/work-exported-docs.json'
 
 function fixture() {
   return {
@@ -198,32 +202,62 @@ function lastItem(doc: MinimalDoc) {
   }
 }
 
-function render(): string {
-  return renderManual(parseDoc(fixture()))
+function render(): GeneratedFile[] {
+  return renderSite(parseDoc(fixture()))
 }
 
-test('renders frontmatter, title and provenance', () => {
-  const markdown = render()
-  assert.ok(markdown.startsWith("---\nlayout: '~/layouts/Typo.astro'\n---\n\n# 企业 API 手册\n\n"))
+function content(path: string): string {
+  const file = render().find((item) => item.path === path)
+  assert.ok(file, `missing ${path}`)
+  return file.content
+}
+
+test('writes one api page per endpoint plus the index and sidebar tree', () => {
+  assert.deepEqual(
+    render().map((file) => file.path),
+    [INDEX_PATH, API_A_PATH, API_B_PATH, TREE_PATH],
+  )
+})
+
+test('renders frontmatter, title and provenance in the index', () => {
+  const markdown = content(INDEX_PATH)
+  assert.ok(
+    markdown.startsWith(
+      '---\nlayout: \'~/layouts/WorkExportedDocs.astro\'\ntitle: "企业 API 手册"\n---\n\n# 企业 API 手册\n\n',
+    ),
+  )
   assert.ok(markdown.includes(SOURCE_LINE))
 })
 
-test('nests folders and keeps sibling sort order', () => {
-  const markdown = render()
-  assert.ok(markdown.includes('## 取消息 | &lt;b>'))
-  assert.ok(markdown.includes('## 消息\n\n消息分组说明\n\n### 发消息'))
-  assert.ok(markdown.indexOf('## 取消息') < markdown.indexOf('## 消息'))
-  assert.ok(!markdown.includes('## 企业api'))
+test('lists folders and api links in upstream order', () => {
+  const markdown = content(INDEX_PATH)
+  assert.ok(markdown.includes('## 目录'))
+  assert.ok(
+    markdown.includes(
+      '- **企业api**\n  - [取消息 | &lt;b>](v2-a/)\n  - **消息** — 消息分组说明\n    - [发消息](v2-b/)',
+    ),
+  )
+})
+
+test('renders each api as its own page', () => {
+  const page = content(API_A_PATH)
+  assert.ok(
+    page.startsWith(
+      '---\nlayout: \'~/layouts/WorkExportedDocs.astro\'\ntitle: "取消息 | <b>"\n---\n\n# 取消息 | &lt;b>\n\n',
+    ),
+  )
+  assert.ok(page.includes('`POST` `https://api.example.com/v2/a`'))
 })
 
 test('renders status only when the mark exists', () => {
-  const markdown = render()
-  assert.ok(markdown.includes('状态：**已完成**'))
-  assert.equal(markdown.split('状态：').length - 1, 1)
+  const page = content(API_A_PATH)
+  assert.ok(page.includes('状态：**已完成**'))
+  assert.equal(page.split('状态：').length - 1, 1)
+  assert.ok(!content(API_B_PATH).includes('状态：'))
 })
 
 test('renders one table per non-empty parameter group', () => {
-  const markdown = render()
+  const markdown = content(API_A_PATH)
   assert.ok(markdown.includes('**Path 参数**'))
   assert.ok(markdown.includes('| `id` | number | 是 | 路径 ID | `7` |'))
   assert.ok(markdown.includes('**Query 参数**'))
@@ -232,17 +266,16 @@ test('renders one table per non-empty parameter group', () => {
   assert.ok(!markdown.includes('没有参数名'))
   assert.ok(!markdown.includes('**Header 参数**'))
   assert.ok(!markdown.includes('**Cookie 参数**'))
-  assert.ok(markdown.includes('`POST` `https://api.example.com/v2/a`'))
 })
 
 test('renders the request body with normalized line endings', () => {
-  const markdown = render()
+  const markdown = content(API_A_PATH)
   assert.ok(markdown.includes('**请求 Body**\n\n```jsonc\n{\n\t"group_id": 1,\n\t"date": "today"\n}\n```'))
   assert.ok(!markdown.includes('\r'))
 })
 
 test('renders response fields under the example that declares them', () => {
-  const markdown = render()
+  const markdown = content(API_A_PATH)
   const success = markdown.indexOf('**成功（200）**')
   const fields = markdown.indexOf('**响应字段**')
   const named = markdown.indexOf('**字段示例（201）**')
@@ -259,11 +292,62 @@ test('renders response fields under the example that declares them', () => {
 })
 
 test('renders descriptions as plain text', () => {
-  assert.ok(render().includes('发送 &lt;em>文本&lt;/em>'))
+  assert.ok(content(API_B_PATH).includes('发送 &lt;em>文本&lt;/em>'))
+})
+
+test('writes a sidebar tree limited to this manual', () => {
+  const tree = JSON.parse(content(TREE_PATH))
+  assert.equal(tree.title, '企业 API 手册')
+  assert.deepEqual(tree.items, [
+    {
+      title: '企业api',
+      description: '',
+      url: null,
+      children: [
+        { title: '取消息 | <b>', description: '', url: 'work-exported-docs/v2-a/', children: [] },
+        {
+          title: '消息',
+          description: '消息分组说明',
+          url: null,
+          children: [
+            { title: '发消息', description: '发送 <em>文本</em>', url: 'work-exported-docs/v2-b/', children: [] },
+          ],
+        },
+      ],
+    },
+  ])
+})
+
+test('adds path segments when endpoint slugs collide', () => {
+  const doc = minimalDoc()
+  const list = doc.data.list as unknown as Array<Record<string, unknown>>
+  list.push({
+    target_id: 'api-2',
+    parent_id: '39e2d403b7d0e8',
+    target_type: 'api',
+    name: '接口 2',
+    sort: 2,
+    method: 'GET',
+    url: 'https://example.com/x/v2/api',
+    mark_id: '',
+    description: '',
+    updated_at: '2026-01-01T00:00:00+08:00',
+    request: {
+      restful: { parameter: [] },
+      query: { parameter: [] },
+      header: { parameter: [] },
+      cookie: { parameter: [] },
+      body: { mode: 'none', raw: '' },
+    },
+    response: { example: [] },
+  })
+  const paths = new Set(renderSite(parseDoc(doc)).map((file) => file.path))
+  assert.ok(paths.has('src/pages/work-exported-docs/v2-api.md'))
+  assert.ok(paths.has('src/pages/work-exported-docs/x-v2-api.md'))
 })
 
 test('is deterministic', () => {
-  assert.equal(render(), render())
+  assert.deepEqual(render(), render())
 })
 
 test('throws SyncError for an upstream error code', () => {
