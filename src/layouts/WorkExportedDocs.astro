@@ -2,8 +2,7 @@
 import DocsTree from '~/components/work-exported-docs/DocsTree.astro'
 import DiffsStyles from '~/components/work-exported-docs/DiffsStyles.astro'
 import '~/styles/work-exported-docs.css'
-import data from '~/shared/work-exported-docs.json'
-import type { WorkExportedDocsData } from '~/shared/work-exported-docs-types'
+import { manual } from '~/shared/work-exported-docs-data'
 
 interface Props {
   title?: string
@@ -11,7 +10,6 @@ interface Props {
   diffs?: boolean
 }
 
-const manual = data as WorkExportedDocsData
 const { title = manual.title, currentSlug = null, diffs = false } = Astro.props
 const pageTitle = title === manual.title ? manual.title : `${title} · ${manual.title}`
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`

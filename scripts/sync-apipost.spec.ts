@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { WorkExportedDocsData } from '../src/shared/work-exported-docs-types'
-import { parseDoc, renderSite, SyncError, type GeneratedFile } from './sync-apipost.ts'
-
-const TREE_PATH = 'src/shared/work-exported-docs.json'
+import { buildData, parseDoc, SyncError } from './sync-apipost.ts'
 
 function fixture() {
   return {
@@ -198,22 +196,9 @@ function lastItem(doc: MinimalDoc) {
   }
 }
 
-function render(): GeneratedFile[] {
-  return renderSite(parseDoc(fixture()))
-}
-
 function data(): WorkExportedDocsData {
-  const file = render().find((item) => item.path === TREE_PATH)
-  assert.ok(file, `missing ${TREE_PATH}`)
-  return JSON.parse(file.content) as WorkExportedDocsData
+  return buildData(parseDoc(fixture()))
 }
-
-test('writes a single data file', () => {
-  assert.deepEqual(
-    render().map((file) => file.path),
-    [TREE_PATH],
-  )
-})
 
 test('keeps the manual metadata', () => {
   const manual = data()
@@ -327,7 +312,7 @@ test('adds path segments when endpoint slugs collide', () => {
     },
     response: { example: [] },
   })
-  const manual = JSON.parse(renderSite(parseDoc(doc))[0]!.content) as WorkExportedDocsData
+  const manual = buildData(parseDoc(doc))
   assert.deepEqual(
     manual.pages.map((page) => page.slug),
     ['v2-api', 'x-v2-api'],
@@ -335,7 +320,7 @@ test('adds path segments when endpoint slugs collide', () => {
 })
 
 test('is deterministic', () => {
-  assert.deepEqual(render(), render())
+  assert.deepEqual(data(), data())
 })
 
 test('throws SyncError for an upstream error code', () => {

@@ -1,11 +1,10 @@
 ---
 import ApiDoc from '~/components/work-exported-docs/ApiDoc.astro'
 import WorkExportedDocs from '~/layouts/WorkExportedDocs.astro'
-import data from '~/shared/work-exported-docs.json'
-import type { ApiPage, WorkExportedDocsData } from '~/shared/work-exported-docs-types'
+import type { ApiPage } from '~/shared/work-exported-docs-types'
+import { manual } from '~/shared/work-exported-docs-data'
 
 export function getStaticPaths() {
-  const manual = data as WorkExportedDocsData
   return manual.pages.map((page) => ({ params: { slug: page.slug }, props: { page } }))
 }
 

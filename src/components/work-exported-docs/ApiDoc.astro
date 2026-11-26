@@ -1,5 +1,6 @@
 ---
 import type { ApiPage, ResponseExample } from '~/shared/work-exported-docs-types'
+import { methodClass, statusClass } from '~/shared/work-exported-docs-ui'
 import CodeBlock from './CodeBlock.astro'
 import ParamsTable from './ParamsTable.astro'
 
@@ -9,11 +10,12 @@ interface Props {
 
 const { page } = Astro.props
 
-const METHODS = new Set(['get', 'post', 'put', 'patch', 'delete'])
-const methodClass = (method: string) =>
-  METHODS.has(method.toLowerCase()) ? `docs-method-${method.toLowerCase()}` : 'docs-method-default'
-const statusClass = (status: string) =>
-  status === '已完成' ? 'docs-status-done' : status === '开发中' ? 'docs-status-wip' : 'docs-status-default'
+const parameterGroups = [
+  { title: 'Path 参数', params: page.pathParameters },
+  { title: 'Query 参数', params: page.queryParameters },
+  { title: 'Header 参数', params: page.headerParameters },
+  { title: 'Cookie 参数', params: page.cookieParameters },
+]
 
 const exampleTitle = (example: ResponseExample, index: number) => {
   if (example.name !== '' && example.code !== '') return `${example.name}（${example.code}）`
@@ -38,10 +40,9 @@ const examples = page.examples.filter(
   </div>
 </header>
 
-<ParamsTable title="Path 参数" params={page.pathParameters} />
-<ParamsTable title="Query 参数" params={page.queryParameters} />
-<ParamsTable title="Header 参数" params={page.headerParameters} />
-<ParamsTable title="Cookie 参数" params={page.cookieParameters} />
+{parameterGroups.map((group) => (
+  <ParamsTable title={group.title} params={group.params} />
+))}
 
 {page.body !== null && (
   <section>
