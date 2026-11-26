@@ -31,6 +31,9 @@ pnpm-debug.log*
 # void generated Cloudflare config
 .void-wrangler.jsonc
 
+# PR preview Worker config
+wrangler.preview.jsonc
+
 # void static deploy staging
 dist-deploy/
 

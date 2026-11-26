@@ -1,0 +1,78 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: PR number
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-preview-${{ github.event.pull_request.number || inputs.pr }}
+  cancel-in-progress: true
+
+env:
+  CLOUDFLARE_ACCOUNT_ID: f1aeb479314b25d24bd6626e9e5bbfe9
+  PREVIEW_NAME: voischat-docs-pr-${{ github.event.pull_request.number || inputs.pr }}
+  PREVIEW_URL: https://voischat-docs-pr-${{ github.event.pull_request.number || inputs.pr }}.voischat.workers.dev/common/
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || (github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/head', inputs.pr) || github.event.pull_request.head.sha }}
+
+      - name: Resolve preview commit
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build:deploy
+
+      - name: Deploy preview worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm deploy:preview
+
+      - name: Comment preview URL
+        uses: actions/github-script@v9
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+          PREVIEW_SHA: ${{ steps.commit.outputs.sha }}
+        with:
+          script: |
+            // TODO(human): 找到带 marker 的已有评论并更新，没有则新建。
+            // 可用：PR_NUMBER / PREVIEW_URL / PREVIEW_SHA 环境变量，context.repo，github.rest.issues.*。
+            // 评论正文请保留 marker 行 `<!-- pr-preview -->`，后续推送才能复用同一条评论。
+
+  cleanup:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete preview worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          curl -sS -X DELETE \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${PREVIEW_NAME}" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            | jq -e '.success' \
+            || echo "preview worker already absent"
