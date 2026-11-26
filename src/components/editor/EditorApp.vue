@@ -49,9 +49,49 @@ const previewHtml = computed(() => marked.parse(stripFrontmatter(content.value),
 const modifiedIds = computed(() => Object.keys(scratch.value))
 
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
+let treeTitleObserver: MutationObserver | undefined
+
+/** 树行是虚拟列表,滚动会重建节点;给每个文件行补原生 title,长标题悬停可看全名 */
+function observeTreeTitles(): MutationObserver | undefined {
+  const root = treeEl.value?.querySelector('file-tree-container')?.shadowRoot
+  if (!root) return
+
+  const apply = () => {
+    root.querySelectorAll('[role="treeitem"]').forEach((row) => {
+      const label = row.getAttribute('aria-label')
+      if (label && row.getAttribute('title') !== label) row.setAttribute('title', label)
+    })
+  }
+  const observer = new MutationObserver(apply)
+  observer.observe(root, { childList: true, subtree: true })
+  apply()
+  return observer
+}
 
 function stripFrontmatter(source: string): string {
   return source.startsWith('---') ? source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '') : source
+}
+
+/** 文件树显示名:Markdown 标题 + 语言,替代 en.md / zh-CN.md 这种难辨认的文件名 */
+function treeLabel(file: EditorFile): string {
+  const title = file.title.replace(/[/\\]/g, '／')
+  return file.lang ? `${title} (${file.lang})` : title
+}
+
+function treePath(file: EditorFile): string {
+  const parts = file.id.split('/')
+  parts[parts.length - 1] = treeLabel(file)
+  return parts.join('/')
+}
+
+// 显示路径与真实文件 id 的双向映射;极端重名时退回原始路径,保证树里的 key 唯一
+const treePathById = new Map<string, string>()
+const fileByTreePath = new Map<string, EditorFile>()
+for (const file of props.files) {
+  let path = treePath(file)
+  if (fileByTreePath.has(path)) path = file.id
+  treePathById.set(file.id, path)
+  fileByTreePath.set(path, file)
 }
 
 function renderFile(): void {
@@ -63,7 +103,12 @@ function renderFile(): void {
 }
 
 function syncTreeStatus(): void {
-  tree.value?.setGitStatus(modifiedIds.value.map((path) => ({ path, status: 'modified' as const })))
+  tree.value?.setGitStatus(
+    modifiedIds.value
+      .map((id) => treePathById.get(id))
+      .filter((path): path is string => !!path)
+      .map((path) => ({ path, status: 'modified' as const })),
+  )
 }
 
 function handleEdit(text: string): void {
@@ -176,9 +221,9 @@ onMounted(async () => {
   const id = selectedId.value
 
   tree.value = new FileTree({
-    paths: props.files.map((file) => file.id),
+    paths: props.files.map((file) => treePathById.get(file.id) ?? file.id),
     initialExpansion: 'open',
-    initialSelectedPaths: id ? [id] : [],
+    initialSelectedPaths: id ? [treePathById.get(id) ?? id] : [],
     flattenEmptyDirectories: true,
     search: true,
     labels: {
@@ -193,11 +238,13 @@ onMounted(async () => {
       },
     },
     onSelectionChange: (paths) => {
-      const path = paths.find((item) => props.files.some((file) => file.id === item))
-      if (path && path !== selectedId.value) void openFile(path)
+      const path = paths.find((item) => fileByTreePath.has(item))
+      const file = path ? fileByTreePath.get(path) : undefined
+      if (file && file.id !== selectedId.value) void openFile(file.id)
     },
   })
   tree.value.render({ containerWrapper: treeEl.value })
+  treeTitleObserver = observeTreeTitles()
   syncTreeStatus()
 
   if (!id) return
@@ -222,6 +269,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   clearTimeout(copiedTimer)
+  treeTitleObserver?.disconnect()
   editor.value?.cleanUp('discard')
   fileView.value?.cleanUp()
   diffView.value?.cleanUp()
@@ -300,7 +348,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .app {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: 340px minmax(0, 1fr);
   height: 100vh;
   overflow: hidden;
   color: #1f2328;
