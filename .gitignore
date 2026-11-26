@@ -24,3 +24,15 @@ pnpm-debug.log*
 .idea/
 
 *.tar.gz
+
+# void generated state
+.void/
+
+# void generated Cloudflare config
+.void-wrangler.jsonc
+
+# void static deploy staging
+dist-deploy/
+
+# void local runtime state
+.wrangler/

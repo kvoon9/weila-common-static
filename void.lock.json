@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "source": {
+    "name": "docs",
+    "compatibility_date": "2026-02-24",
+    "compatibility_flags": ["nodejs_als"]
+  },
+  "resolved": {
+    "name": "docs",
+    "compatibility_date": "2026-02-24",
+    "compatibility_flags": ["nodejs_als"],
+    "account_id": "28a23c2ec9aeeb01a95276f1d9ca42df"
+  },
+  "text": "{\n  \"name\": \"docs\",\n  \"compatibility_date\": \"2026-02-24\",\n  \"compatibility_flags\": [\n    \"nodejs_als\"\n  ],\n  \"account_id\": \"28a23c2ec9aeeb01a95276f1d9ca42df\"\n}\n"
+}

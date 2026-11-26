@@ -45,7 +45,7 @@ export async function loadIntlDocs(): Promise<Map<string, LangDoc>> {
 
   for (const { docPath, lang, entry } of parsed) {
     const { Content, headings } = await render(entry)
-    const title = headings.find(h => h.depth === 1)?.text ?? 'Weila Static'
+    const title = headings.find((h) => h.depth === 1)?.text ?? 'Weila Static'
     const doc = docs.get(docPath) ?? { path: docPath, langs: [], titles: {}, contents: {} }
     doc.langs.push(lang)
     doc.titles[lang] = title
@@ -58,12 +58,12 @@ export async function loadIntlDocs(): Promise<Map<string, LangDoc>> {
 
 /** 文档的默认展示语言:优先站点默认语言,否则该文档存在的第一种语言 */
 export function pickDefaultLang(doc: Pick<LangDoc, 'langs'>): string {
-  return doc.langs.includes(DEFAULT_LOCALE) ? DEFAULT_LOCALE : doc.langs[0] ?? DEFAULT_LOCALE
+  return doc.langs.includes(DEFAULT_LOCALE) ? DEFAULT_LOCALE : (doc.langs[0] ?? DEFAULT_LOCALE)
 }
 
 /** 语言显示名(切换器、语言徽标共用);语言清单本身来自 astro.config.ts 的 i18n.locales */
 export const LANG_LABELS: Record<string, string> = {
   'zh-CN': '简体中文',
   'zh-TW': '繁體中文',
-  'en': 'English',
+  en: 'English',
 }

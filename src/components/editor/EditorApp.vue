@@ -25,7 +25,7 @@ const mode = ref<'edit' | 'diff'>('edit')
 const error = ref('')
 const copied = ref(false)
 
-const current = computed(() => props.files.find(file => file.id === selectedId.value))
+const current = computed(() => props.files.find((file) => file.id === selectedId.value))
 const dirty = computed(() => !!current.value && content.value !== current.value.content)
 const previewHtml = computed(() => marked.parse(stripFrontmatter(content.value), { async: false }) as string)
 const modifiedIds = computed(() => Object.keys(scratch.value))
@@ -33,14 +33,11 @@ const modifiedIds = computed(() => Object.keys(scratch.value))
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
 
 function stripFrontmatter(source: string): string {
-  return source.startsWith('---')
-    ? source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '')
-    : source
+  return source.startsWith('---') ? source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '') : source
 }
 
 function renderFile(): void {
-  if (!current.value || !fileView.value)
-    return
+  if (!current.value || !fileView.value) return
   fileView.value.render({
     file: { name: current.value.id, contents: content.value },
     containerWrapper: editorEl.value,
@@ -48,31 +45,26 @@ function renderFile(): void {
 }
 
 function syncTreeStatus(): void {
-  tree.value?.setGitStatus(modifiedIds.value.map(path => ({ path, status: 'modified' as const })))
+  tree.value?.setGitStatus(modifiedIds.value.map((path) => ({ path, status: 'modified' as const })))
 }
 
 function handleEdit(text: string): void {
   const file = current.value
-  if (!file)
-    return
+  if (!file) return
 
   const wasDirty = scratch.value[file.id] !== undefined
   content.value = text
 
-  if (text === file.content)
-    delete scratch.value[file.id]
-  else
-    scratch.value[file.id] = text
+  if (text === file.content) delete scratch.value[file.id]
+  else scratch.value[file.id] = text
 
   // 只在「干净 ↔ 有改动」切换时刷新树的角标,避免每敲一个字都重绘文件树
-  if (wasDirty !== (scratch.value[file.id] !== undefined))
-    syncTreeStatus()
+  if (wasDirty !== (scratch.value[file.id] !== undefined)) syncTreeStatus()
 }
 
 async function openFile(id: string): Promise<void> {
-  const file = props.files.find(item => item.id === id)
-  if (!file || id === selectedId.value)
-    return
+  const file = props.files.find((item) => item.id === id)
+  if (!file || id === selectedId.value) return
 
   selectedId.value = id
   content.value = scratch.value[id] ?? file.content
@@ -84,15 +76,13 @@ async function openFile(id: string): Promise<void> {
 
 function resetFile(): void {
   const file = current.value
-  if (!file)
-    return
+  if (!file) return
 
   content.value = file.content
   delete scratch.value[file.id]
   syncTreeStatus()
 
-  if (mode.value === 'diff')
-    mode.value = 'edit'
+  if (mode.value === 'diff') mode.value = 'edit'
   void nextTick(renderFile)
 }
 
@@ -102,8 +92,7 @@ async function copySource(): Promise<void> {
   try {
     await navigator.clipboard.writeText(content.value)
     ok = true
-  }
-  catch {
+  } catch {
     const textarea = document.createElement('textarea')
     textarea.value = content.value
     textarea.style.position = 'fixed'
@@ -128,8 +117,7 @@ async function copySource(): Promise<void> {
 
 function renderDiff(): void {
   const file = current.value
-  if (!file || !diffEl.value)
-    return
+  if (!file || !diffEl.value) return
 
   if (!dirty.value) {
     diffEl.value.replaceChildren()
@@ -161,7 +149,7 @@ async function showDiff(): Promise<void> {
 onMounted(async () => {
   // ?file= 深链:文档页「打开编辑器」直接定位到对应文件
   const query = new URLSearchParams(location.search).get('file')
-  const deepFile = query ? props.files.find(file => file.id === query) : undefined
+  const deepFile = query ? props.files.find((file) => file.id === query) : undefined
   if (deepFile) {
     selectedId.value = deepFile.id
     content.value = deepFile.content
@@ -170,7 +158,7 @@ onMounted(async () => {
   const id = selectedId.value
 
   tree.value = new FileTree({
-    paths: props.files.map(file => file.id),
+    paths: props.files.map((file) => file.id),
     initialExpansion: 'open',
     initialSelectedPaths: id ? [id] : [],
     flattenEmptyDirectories: true,
@@ -187,16 +175,14 @@ onMounted(async () => {
       },
     },
     onSelectionChange: (paths) => {
-      const path = paths.find(item => props.files.some(file => file.id === item))
-      if (path && path !== selectedId.value)
-        void openFile(path)
+      const path = paths.find((item) => props.files.some((file) => file.id === item))
+      if (path && path !== selectedId.value) void openFile(path)
     },
   })
   tree.value.render({ containerWrapper: treeEl.value })
   syncTreeStatus()
 
-  if (!id)
-    return
+  if (!id) return
 
   try {
     fileView.value = new DiffsFile({
@@ -211,8 +197,7 @@ onMounted(async () => {
     await fileView.value.prepareForEditing()
     editor.value = new Editor('file', {})
     editor.value.edit(fileView.value)
-  }
-  catch (reason) {
+  } catch (reason) {
     error.value = `编辑器加载失败:${reason instanceof Error ? reason.message : String(reason)}`
   }
 })
@@ -234,9 +219,7 @@ onBeforeUnmount(() => {
         <span class="sidebar-count">{{ files.length }}</span>
       </div>
       <div ref="treeEl" class="tree" />
-      <div class="sidebar-foot">
-        修改仅在本页生效,不会保存到仓库
-      </div>
+      <div class="sidebar-foot">修改仅在本页生效,不会保存到仓库</div>
     </aside>
 
     <main class="main">
@@ -247,17 +230,10 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="actions">
-          <button
-            type="button"
-            class="copy-btn"
-            :class="{ copied }"
-            @click="copySource"
-          >
+          <button type="button" class="copy-btn" :class="{ copied }" @click="copySource">
             {{ copied ? '已复制' : '复制 Markdown' }}
           </button>
-          <button v-if="dirty" type="button" class="text-btn" @click="resetFile">
-            还原
-          </button>
+          <button v-if="dirty" type="button" class="text-btn" @click="resetFile">还原</button>
           <div class="segmented" role="group" aria-label="视图">
             <button
               type="button"
@@ -289,15 +265,11 @@ onBeforeUnmount(() => {
         </div>
 
         <div v-show="mode === 'diff'" class="pane diff-pane">
-          <div v-if="!dirty" class="no-diff">
-            没有改动
-          </div>
+          <div v-if="!dirty" class="no-diff">没有改动</div>
           <div ref="diffEl" class="diffs-host" />
         </div>
 
-        <div v-if="!current" class="pane empty-state">
-          从左侧选择一篇文档
-        </div>
+        <div v-if="!current" class="pane empty-state">从左侧选择一篇文档</div>
       </section>
 
       <div v-if="error" class="error">

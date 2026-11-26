@@ -22,8 +22,7 @@ let copiedTimer: ReturnType<typeof setTimeout> | undefined
 
 const currentEntry = computed<CopySource | null>(() => {
   const entry = props.sources[lang.value]
-  if (entry)
-    return entry
+  if (entry) return entry
   return Object.values(props.sources)[0] ?? null
 })
 
@@ -38,8 +37,7 @@ let langObserver: MutationObserver | undefined
 
 async function copy() {
   const markdown = currentEntry.value?.markdown
-  if (markdown == null)
-    return
+  if (markdown == null) return
 
   if (await copyText(markdown)) {
     copied.value = true
@@ -51,13 +49,11 @@ async function copy() {
 }
 
 function onDocClick(event: MouseEvent) {
-  if (open.value && root.value && !root.value.contains(event.target as Node))
-    open.value = false
+  if (open.value && root.value && !root.value.contains(event.target as Node)) open.value = false
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape')
-    open.value = false
+  if (event.key === 'Escape') open.value = false
 }
 
 onMounted(() => {
@@ -93,18 +89,19 @@ onBeforeUnmount(() => {
       aria-label="更多操作"
       @click="open = !open"
     >
-      <svg
-        class="chevron" :class="{ open }"
-        width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"
-      >
-        <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <svg class="chevron" :class="{ open }" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+        <path
+          d="M2 3.5L5 6.5L8 3.5"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </svg>
     </button>
 
     <div v-if="open" class="menu" role="menu">
-      <a :href="editorHref" role="menuitem" class="menu-item" @click="open = false">
-        打开编辑器
-      </a>
+      <a :href="editorHref" role="menuitem" class="menu-item" @click="open = false"> 打开编辑器 </a>
     </div>
   </div>
 </template>
@@ -117,7 +114,9 @@ onBeforeUnmount(() => {
   border: 1px solid #e5e7eb;
   border-radius: 9999px;
   background: #fff;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .copy-btn {
@@ -182,7 +181,9 @@ onBeforeUnmount(() => {
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   background: #fff;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 .menu-item {

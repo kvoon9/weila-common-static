@@ -5,7 +5,7 @@ import 'github-markdown-css/github-markdown.css'
 
 const { frontmatter, headings, url } = Astro.props
 const navigation = frontmatter?.navigation
-const title = frontmatter?.title || headings?.find(h => h.depth === 1)?.text || 'Weila Static'
+const title = frontmatter?.title || headings?.find((h) => h.depth === 1)?.text || 'Weila Static'
 
 // 「复制 Markdown / 打开编辑器」:md 单语页提供源码与编辑器深链(?raw 只读字符串)
 const mdSources = import.meta.glob('~/pages/**/*.md', {
@@ -14,14 +14,13 @@ const mdSources = import.meta.glob('~/pages/**/*.md', {
   eager: true,
 }) as Record<string, string>
 
-const copySources: Record<string, { markdown: string, editorPath: string }> = {}
+const copySources: Record<string, { markdown: string; editorPath: string }> = {}
 {
   // url 形如 /common/android/privacy/,去掉 base 与尾斜杠后匹配 pages/<路径>.md
   const pagePath = (url ?? '').replace(/^\/common\//, '').replace(/\/$/, '')
   const suffix = `pages/${pagePath}.md`
   const source = Object.entries(mdSources).find(([f]) => f.endsWith(suffix))
-  if (source != null)
-    copySources['zh-CN'] = { markdown: source[1], editorPath: `pages/${pagePath}.md` }
+  if (source != null) copySources['zh-CN'] = { markdown: source[1], editorPath: `pages/${pagePath}.md` }
 }
 ---
 
@@ -38,9 +37,7 @@ const copySources: Record<string, { markdown: string, editorPath: string }> = {}
   <body class="markdown-body">
     <!-- 右上角操作区:复制/编辑器按钮与 Docs 导航同一行、同一套胶囊视觉 -->
     <div id="page-actions">
-      {Object.keys(copySources).length > 0 && (
-        <CopyEditButton client:load sources={copySources} />
-      )}
+      {Object.keys(copySources).length > 0 && <CopyEditButton client:load sources={copySources} />}
 
       <!-- 只在有 navigation 数据时显示下拉按钮 -->
       {navigation && <NavigationDropdown navigation={navigation} client:load />}
