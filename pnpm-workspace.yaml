@@ -17,3 +17,5 @@ allowBuilds:
   esbuild: true
   # cloudflare adapter / void 本地运行时
   workerd: true
+  # wrangler 的 D1 本地依赖，预览部署只上传静态资源，无需编译原生模块
+  better-sqlite3: false
