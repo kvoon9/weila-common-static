@@ -1,0 +1,62 @@
+---
+import DocsTree from '~/components/work-exported-docs/DocsTree.astro'
+import DiffsStyles from '~/components/work-exported-docs/DiffsStyles.astro'
+import '~/styles/work-exported-docs.css'
+import data from '~/shared/work-exported-docs.json'
+import type { WorkExportedDocsData } from '~/shared/work-exported-docs-types'
+
+interface Props {
+  title?: string
+  currentSlug?: string | null
+  diffs?: boolean
+}
+
+const manual = data as WorkExportedDocsData
+const { title = manual.title, currentSlug = null, diffs = false } = Astro.props
+const pageTitle = title === manual.title ? manual.title : `${title} · ${manual.title}`
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`
+const overviewCurrent = currentSlug === null
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light dark" />
+    <title>{pageTitle}</title>
+    {diffs && <DiffsStyles />}
+  </head>
+  <body>
+    <div class="docs-layout">
+      <aside class="docs-sidebar">
+        <a class="docs-brand" href={`${base}work-exported-docs/`}>
+          <span class="docs-brand-title">{manual.title}</span>
+          <span class="docs-brand-meta">上游更新于 {manual.updatedAt}</span>
+        </a>
+        <nav aria-label="文档目录">
+          <ul class="docs-nav">
+            <li>
+              <a
+                class="docs-overview-link"
+                href={`${base}work-exported-docs/`}
+                aria-current={overviewCurrent ? 'page' : undefined}
+              >
+                概览
+              </a>
+            </li>
+          </ul>
+          <DocsTree items={manual.tree} currentSlug={currentSlug} />
+        </nav>
+      </aside>
+
+      <main class="docs-main">
+        <article class="docs-article">
+          <slot />
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

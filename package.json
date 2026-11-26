@@ -12,6 +12,8 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
+    "sync:apipost": "tsx scripts/sync-apipost.ts",
+    "test": "node --import tsx --test scripts/*.spec.ts",
     "archive": "tsx scripts/archive.ts",
     "release": "npx bumpp"
   },

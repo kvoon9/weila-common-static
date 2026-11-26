@@ -1,0 +1,44 @@
+---
+import type { Parameter } from '~/shared/work-exported-docs-types'
+
+interface Props {
+  title: string
+  params: Parameter[]
+  withExample?: boolean
+}
+
+const { title, params, withExample = true } = Astro.props
+const rows = params.filter((param) => param.key !== '')
+---
+
+{rows.length > 0 && (
+  <section class="docs-params">
+    <h3>{title}</h3>
+    <div class="docs-table-wrap">
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>参数名</th>
+            <th>类型</th>
+            <th>必填</th>
+            <th>说明</th>
+            {withExample && <th>示例值</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((param) => (
+            <tr>
+              <td>
+                <code>{param.key}</code>
+              </td>
+              <td>{param.type === '' ? '-' : param.type}</td>
+              <td>{param.required ? '是' : '否'}</td>
+              <td>{param.description === '' ? '-' : param.description}</td>
+              {withExample && <td>{param.value === '' ? '-' : <code>{param.value}</code>}</td>}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+)}

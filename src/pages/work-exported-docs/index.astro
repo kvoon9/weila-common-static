@@ -1,0 +1,9 @@
+---
+import Overview from '~/components/work-exported-docs/Overview.astro'
+import WorkExportedDocs from '~/layouts/WorkExportedDocs.astro'
+import data from '~/shared/work-exported-docs.json'
+---
+
+<WorkExportedDocs title={data.title} currentSlug={null}>
+  <Overview />
+</WorkExportedDocs>

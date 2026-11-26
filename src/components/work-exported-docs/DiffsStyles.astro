@@ -1,0 +1,16 @@
+---
+import { preloadFile } from '@pierre/diffs/ssr'
+import { CODE_BLOCK_OPTIONS } from '~/shared/diffs-options'
+
+const { prerenderedHTML } = await preloadFile({
+  file: { name: 'seed.jsonc', contents: '{}\n' },
+  options: CODE_BLOCK_OPTIONS,
+})
+
+const styles = [...prerenderedHTML.matchAll(/<style[^>]*>[\s\S]*?<\/style>/g)]
+  .map((match) => match[0])
+  .join('\n')
+  .replaceAll(':host', '.diffs-code')
+---
+
+<Fragment set:html={styles} />

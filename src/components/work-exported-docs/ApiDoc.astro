@@ -1,0 +1,59 @@
+---
+import type { ApiPage, ResponseExample } from '~/shared/work-exported-docs-types'
+import CodeBlock from './CodeBlock.astro'
+import ParamsTable from './ParamsTable.astro'
+
+interface Props {
+  page: ApiPage
+}
+
+const { page } = Astro.props
+
+const METHODS = new Set(['get', 'post', 'put', 'patch', 'delete'])
+const methodClass = (method: string) =>
+  METHODS.has(method.toLowerCase()) ? `docs-method-${method.toLowerCase()}` : 'docs-method-default'
+const statusClass = (status: string) =>
+  status === '已完成' ? 'docs-status-done' : status === '开发中' ? 'docs-status-wip' : 'docs-status-default'
+
+const exampleTitle = (example: ResponseExample, index: number) => {
+  if (example.name !== '' && example.code !== '') return `${example.name}（${example.code}）`
+  if (example.name !== '') return example.name
+  if (example.code !== '') return `响应（${example.code}）`
+  return `示例 ${index + 1}`
+}
+
+const examples = page.examples.filter(
+  (example) => example.raw !== '' || example.fields.some((field) => field.key !== ''),
+)
+---
+
+<header>
+  <p class="docs-eyebrow">Work exported docs</p>
+  <h1>{page.title}</h1>
+  {page.description !== '' && <p class="docs-description">{page.description}</p>}
+  <div class="docs-endpoint-row">
+    <span class:list={['docs-method', methodClass(page.method)]}>{page.method}</span>
+    <code class="docs-endpoint">{page.endpoint}</code>
+    {page.markName && <span class:list={['docs-status', statusClass(page.markName)]}>{page.markName}</span>}
+  </div>
+</header>
+
+<ParamsTable title="Path 参数" params={page.pathParameters} />
+<ParamsTable title="Query 参数" params={page.queryParameters} />
+<ParamsTable title="Header 参数" params={page.headerParameters} />
+<ParamsTable title="Cookie 参数" params={page.cookieParameters} />
+
+{page.body !== null && (
+  <section>
+    <h2>请求 Body</h2>
+    <CodeBlock code={page.body} filename="request.jsonc" label="jsonc" />
+  </section>
+)}
+
+{examples.map((example, index) => (
+  <section>
+    <h2>{exampleTitle(example, index)}</h2>
+    {example.raw !== '' && <CodeBlock code={example.raw} filename={`response-${index + 1}.jsonc`} label="jsonc" />}
+    <ParamsTable title="响应字段" params={example.fields} withExample={false} />
+  </section>
+))}
