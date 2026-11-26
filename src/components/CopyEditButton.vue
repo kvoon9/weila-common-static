@@ -206,4 +206,58 @@ onBeforeUnmount(() => {
   color: #111827;
   outline: none;
 }
+
+/* 深色模式:文档页 body 由 github-markdown-css 切到暗色,按钮跟随 */
+@media (prefers-color-scheme: dark) {
+  .copy-edit-group {
+    border-color: #30363d;
+    background: #0d1117;
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.4),
+      0 2px 4px -2px rgb(0 0 0 / 0.4);
+  }
+
+  .copy-btn {
+    border-right-color: #30363d;
+    background: #0d1117;
+    color: #c9d1d9;
+  }
+
+  .copy-btn:hover {
+    background: #161b22;
+    color: #f0f6fc;
+  }
+
+  .copy-btn.copied {
+    color: #3fb950;
+  }
+
+  .menu-trigger {
+    background: #0d1117;
+    color: #c9d1d9;
+  }
+
+  .menu-trigger:hover {
+    background: #161b22;
+    color: #f0f6fc;
+  }
+
+  .menu {
+    border-color: #30363d;
+    background: #161b22;
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.5),
+      0 4px 6px -4px rgb(0 0 0 / 0.5);
+  }
+
+  .menu-item {
+    color: #c9d1d9;
+  }
+
+  .menu-item:hover,
+  .menu-item:focus-visible {
+    background: #21262d;
+    color: #f0f6fc;
+  }
+}
 </style>

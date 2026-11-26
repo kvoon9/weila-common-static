@@ -49,7 +49,7 @@ const base = import.meta.env.BASE_URL
     <!-- 下拉按钮(与复制/编辑器按钮同规格:2.25rem 高的胶囊) -->
     <button
       type="button"
-      class="flex items-center gap-2 px-3 py-0 bg-white rounded-full shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg transition-all duration-200 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 h-9 text-sm"
+      class="nav-trigger flex items-center gap-2 px-3 py-0 bg-white rounded-full shadow-md border border-gray-200 hover:bg-gray-50 hover:shadow-lg transition-all duration-200 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 h-9 text-sm"
       @click="toggleDropdown"
       :aria-expanded="isOpen"
       aria-label="导航菜单"
@@ -66,10 +66,14 @@ const base = import.meta.env.BASE_URL
     <!-- 下拉菜单 -->
     <div v-if="isOpen" absolute right-0 :style="{ animation: 'fade-in 0.2s ease-out' }">
       <ul>
-        <li v-for="item in navigation" :key="item.url" class="bg-neutral-50 border-b border-gray-100 last:border-b-0">
+        <li
+          v-for="item in navigation"
+          :key="item.url"
+          class="nav-item bg-neutral-50 border-b border-gray-100 last:border-b-0"
+        >
           <a
             :href="`${base}${item.url}`"
-            class="flex items-center gap-2 px-4 py-3 text-gray-700 no-underline transition-colors duration-150 hover:bg-gray-50 hover:text-gray-900 w-full text-left whitespace-nowrap"
+            class="nav-item-link flex items-center gap-2 px-4 py-3 text-gray-700 no-underline transition-colors duration-150 hover:bg-gray-50 hover:text-gray-900 w-full text-left whitespace-nowrap"
             @click="closeDropdown"
           >
             <span class="text-gray-400 text-sm">→</span>
@@ -90,6 +94,36 @@ const base = import.meta.env.BASE_URL
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* 深色模式:文档页 body 由 github-markdown-css 切到暗色,Docs 菜单跟随 */
+@media (prefers-color-scheme: dark) {
+  .nav-trigger {
+    background: #0d1117;
+    border-color: #30363d;
+  }
+
+  .nav-trigger:hover {
+    background: #161b22;
+  }
+
+  .nav-trigger .text-gray-600 {
+    color: #c9d1d9;
+  }
+
+  .nav-item {
+    background: #161b22;
+    border-color: #21262d;
+  }
+
+  .nav-item-link {
+    color: #c9d1d9;
+  }
+
+  .nav-item-link:hover {
+    background: #21262d;
+    color: #f0f6fc;
   }
 }
 </style>
