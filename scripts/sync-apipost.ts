@@ -1,34 +1,23 @@
-import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import type {
+  ApiPage,
+  Parameter,
+  ResponseExample,
+  SidebarItem,
+  WorkExportedDocsData,
+} from '../src/shared/work-exported-docs-types'
 
 const ISSUE_ID = '739e2fbb6870000'
 const ROOT_TARGET_ID = '39e2d403b7d0e8'
 const PAGE_TITLE = '企业 API 手册'
-const OUTPUT_DIR = 'src/pages/work-exported-docs'
-const PUBLIC_DIR = 'work-exported-docs'
 const TREE_PATH = 'src/shared/work-exported-docs.json'
-const LAYOUT_PATH = '~/layouts/WorkExportedDocs.astro'
 const SOURCE_URL = 'https://docs.apipost.net/docs/detail/739e2fbb6870000?target_id=39e2d403b7d0e8&locale=zh-cn'
 const DOC_URL = `https://docs.apipost.net/doc/down?issue_id=${ISSUE_ID}`
 
 export class SyncError extends Error {
   override name = 'SyncError'
-}
-
-export type Parameter = {
-  key: string
-  type: string
-  required: boolean
-  description: string
-  value: string
-}
-
-export type ResponseExample = {
-  name: string
-  code: string
-  raw: string
-  fields: Parameter[]
 }
 
 export type ApiNode = {
@@ -62,20 +51,6 @@ export type Manual = {
   pathNames: string[]
   updatedAt: string
   children: TreeNode[]
-}
-
-export type SidebarItem = {
-  title: string
-  description: string
-  url: string | null
-  children: SidebarItem[]
-}
-
-export type SidebarTree = {
-  title: string
-  sourceUrl: string
-  updatedAt: string
-  items: SidebarItem[]
 }
 
 export type GeneratedFile = {
@@ -314,109 +289,6 @@ export function parseDoc(json: unknown): Manual {
   }
 }
 
-function plain(value: string): string {
-  return value.replace(/\s*[\r\n]+\s*/g, ' ').trim()
-}
-
-function textLine(value: string): string {
-  return plain(value).replaceAll('<', '&lt;')
-}
-
-function cellText(value: string): string {
-  return plain(value).replaceAll('<', '&lt;').replaceAll('|', '\\|') || '-'
-}
-
-function longestBacktickRun(value: string): number {
-  let longest = 0
-  let current = 0
-  for (const character of value) {
-    if (character === '`') {
-      current += 1
-      longest = Math.max(longest, current)
-    } else {
-      current = 0
-    }
-  }
-  return longest
-}
-
-function codeSpan(value: string): string {
-  const text = plain(value)
-  const fence = '`'.repeat(longestBacktickRun(text) + 1)
-  const padding = /^`|`$/.test(text) ? ' ' : ''
-  return `${fence}${padding}${text}${padding}${fence}`
-}
-
-function tableCode(value: string): string {
-  return codeSpan(value).replaceAll('|', '\\|')
-}
-
-function fencedJsonc(raw: string): string {
-  const fence = '`'.repeat(Math.max(3, longestBacktickRun(raw) + 1))
-  return `${fence}jsonc\n${raw}\n${fence}`
-}
-
-function pushTable(blocks: string[], headers: string[], rows: string[][]): void {
-  const lines = [
-    `| ${headers.join(' | ')} |`,
-    `| ${headers.map(() => '---').join(' | ')} |`,
-    ...rows.map((row) => `| ${row.join(' | ')} |`),
-  ]
-  blocks.push(lines.join('\n'))
-}
-
-const WITH_EXAMPLE_HEADERS = ['参数名', '类型', '必填', '说明', '示例值']
-const WITHOUT_EXAMPLE_HEADERS = ['参数名', '类型', '必填', '说明']
-
-function parameterRow(parameter: Parameter, withExample: boolean): string[] {
-  const row = [
-    tableCode(parameter.key),
-    cellText(parameter.type),
-    parameter.required ? '是' : '否',
-    cellText(parameter.description),
-  ]
-  if (withExample) row.push(parameter.value === '' ? '-' : tableCode(parameter.value))
-  return row
-}
-
-function pushParameterTable(blocks: string[], label: string, params: Parameter[], withExample: boolean): void {
-  const rows = params
-    .filter((parameter) => parameter.key !== '')
-    .map((parameter) => parameterRow(parameter, withExample))
-  if (rows.length === 0) return
-  blocks.push(`**${label}**`)
-  pushTable(blocks, withExample ? WITH_EXAMPLE_HEADERS : WITHOUT_EXAMPLE_HEADERS, rows)
-}
-
-function exampleTitle(example: ResponseExample, index: number): string {
-  const name = textLine(example.name)
-  const code = textLine(example.code)
-  if (name !== '' && code !== '') return `**${name}（${code}）**`
-  if (name !== '') return `**${name}**`
-  return `**示例 ${index + 1}**`
-}
-
-function pushApiDetail(blocks: string[], api: ApiNode): void {
-  blocks.push(`${codeSpan(api.method)} ${codeSpan(api.endpoint)}`)
-  if (api.markName !== null) blocks.push(`状态：**${textLine(api.markName)}**`)
-  pushParameterTable(blocks, 'Path 参数', api.pathParameters, true)
-  pushParameterTable(blocks, 'Query 参数', api.queryParameters, true)
-  pushParameterTable(blocks, 'Header 参数', api.headerParameters, true)
-  pushParameterTable(blocks, 'Cookie 参数', api.cookieParameters, true)
-
-  if (api.body !== null) {
-    blocks.push('**请求 Body**')
-    blocks.push(fencedJsonc(api.body))
-  }
-
-  for (const [index, example] of api.examples.entries()) {
-    if (example.raw === '' && !example.fields.some((field) => field.key !== '')) continue
-    blocks.push(exampleTitle(example, index))
-    if (example.raw !== '') blocks.push(fencedJsonc(example.raw))
-    pushParameterTable(blocks, '响应字段', example.fields, false)
-  }
-}
-
 function slugSegment(value: string): string {
   return value
     .toLowerCase()
@@ -444,16 +316,7 @@ function uniqueSlug(endpoint: string, used: Set<string>): string {
   return `${base}-${suffix}`
 }
 
-function frontmatter(title: string): string {
-  return `---\nlayout: '${LAYOUT_PATH}'\ntitle: ${JSON.stringify(plain(title))}\n---`
-}
-
-type ApiPage = {
-  slug: string
-  api: ApiNode
-}
-
-function buildSidebar(manual: Manual): { sidebar: SidebarTree; pages: ApiPage[] } {
+function buildSidebar(manual: Manual): { tree: SidebarItem[]; pages: ApiPage[] } {
   const used = new Set<string>()
   const pages: ApiPage[] = []
 
@@ -462,76 +325,50 @@ function buildSidebar(manual: Manual): { sidebar: SidebarTree; pages: ApiPage[] 
       if (node.kind === 'api') {
         const slug = uniqueSlug(node.endpoint, used)
         used.add(slug)
-        pages.push({ slug, api: node })
-        return {
+        pages.push({
+          slug,
           title: node.name,
           description: node.description,
-          url: `${PUBLIC_DIR}/${slug}/`,
-          children: [],
-        }
+          method: node.method,
+          endpoint: node.endpoint,
+          markName: node.markName,
+          pathParameters: node.pathParameters,
+          queryParameters: node.queryParameters,
+          headerParameters: node.headerParameters,
+          cookieParameters: node.cookieParameters,
+          body: node.body,
+          examples: node.examples,
+        })
+        return { title: node.name, description: node.description, kind: 'api', slug, children: [] }
       }
       return {
         title: node.name,
         description: node.description,
-        url: null,
+        kind: 'group',
+        slug: null,
         children: build(node.children),
       }
     })
 
   const rootName = manual.pathNames.at(-1) ?? manual.title
   return {
-    sidebar: {
-      title: manual.title,
-      sourceUrl: manual.sourceUrl,
-      updatedAt: manual.updatedAt,
-      items: [{ title: rootName, description: '', url: null, children: build(manual.children) }],
-    },
+    tree: [{ title: rootName, description: '', kind: 'group', slug: null, children: build(manual.children) }],
     pages,
   }
 }
 
-function renderSidebarList(items: SidebarItem[], depth: number): string[] {
-  const lines: string[] = []
-  for (const item of items) {
-    const indent = '  '.repeat(depth)
-    if (item.url === null) {
-      const description = plain(item.description) === '' ? '' : ` — ${textLine(item.description)}`
-      lines.push(`${indent}- **${textLine(item.title)}**${description}`)
-    } else {
-      lines.push(`${indent}- [${textLine(item.title)}](${item.url.slice(PUBLIC_DIR.length + 1)})`)
-    }
-    lines.push(...renderSidebarList(item.children, depth + 1))
-  }
-  return lines
-}
-
-function renderIndex(manual: Manual, sidebar: SidebarTree): string {
-  const path = manual.pathNames.map((name) => textLine(name)).join(' / ')
-  const blocks = [
-    frontmatter(manual.title),
-    `# ${textLine(manual.title)}`,
-    `> 来源：[Apipost 文档「${path}」](${manual.sourceUrl})（${textLine(manual.projectName)}），上游更新于 ${manual.updatedAt}。`,
-    '## 目录',
-    renderSidebarList(sidebar.items, 0).join('\n'),
-  ]
-  return `${blocks.join('\n\n')}\n`
-}
-
-function renderApiPage(api: ApiNode): string {
-  const blocks = [frontmatter(api.name), `# ${textLine(api.name)}`]
-  const description = textLine(api.description)
-  if (description !== '') blocks.push(description)
-  pushApiDetail(blocks, api)
-  return `${blocks.join('\n\n')}\n`
-}
-
 export function renderSite(manual: Manual): GeneratedFile[] {
-  const { sidebar, pages } = buildSidebar(manual)
-  return [
-    { path: `${OUTPUT_DIR}/index.md`, content: renderIndex(manual, sidebar) },
-    ...pages.map((page) => ({ path: `${OUTPUT_DIR}/${page.slug}.md`, content: renderApiPage(page.api) })),
-    { path: TREE_PATH, content: `${JSON.stringify(sidebar, null, 2)}\n` },
-  ]
+  const { tree, pages } = buildSidebar(manual)
+  const data: WorkExportedDocsData = {
+    title: manual.title,
+    sourceUrl: manual.sourceUrl,
+    projectName: manual.projectName,
+    pathNames: manual.pathNames,
+    updatedAt: manual.updatedAt,
+    tree,
+    pages,
+  }
+  return [{ path: TREE_PATH, content: `${JSON.stringify(data, null, 2)}\n` }]
 }
 
 async function fetchDoc(): Promise<unknown> {
@@ -542,15 +379,6 @@ async function fetchDoc(): Promise<unknown> {
 
 async function readText(path: string): Promise<string | null> {
   return readFile(path, 'utf8').catch(() => null)
-}
-
-async function staleFiles(generated: Set<string>): Promise<string[]> {
-  const entries = await readdir(OUTPUT_DIR).catch(() => [] as string[])
-  return entries
-    .filter((name) => name.endsWith('.md'))
-    .map((name) => `${OUTPUT_DIR}/${name}`)
-    .filter((path) => !generated.has(path))
-    .sort()
 }
 
 async function writeFileAtomic(path: string, content: string): Promise<void> {
@@ -564,13 +392,11 @@ async function writeFileAtomic(path: string, content: string): Promise<void> {
 async function main(argv: string[]): Promise<number> {
   try {
     const files = renderSite(parseDoc(await fetchDoc()))
-    const generated = new Set(files.map((file) => file.path))
     if (argv.includes('--check')) {
       const problems: string[] = []
       for (const file of files) {
         if ((await readText(file.path)) !== file.content) problems.push(file.path)
       }
-      problems.push(...(await staleFiles(generated)))
       if (problems.length === 0) {
         console.log('生成结果与上游一致')
         return 0
@@ -580,7 +406,6 @@ async function main(argv: string[]): Promise<number> {
       return 1
     }
     for (const file of files) await writeFileAtomic(file.path, file.content)
-    for (const path of await staleFiles(generated)) await rm(path)
     console.log(`已写入 ${files.length} 个文件`)
     return 0
   } catch (error) {

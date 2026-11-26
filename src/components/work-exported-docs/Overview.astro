@@ -1,0 +1,43 @@
+---
+import data from '~/shared/work-exported-docs.json'
+import type { WorkExportedDocsData } from '~/shared/work-exported-docs-types'
+
+const manual = data as WorkExportedDocsData
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`
+
+const METHODS = new Set(['get', 'post', 'put', 'patch', 'delete'])
+const methodClass = (method: string) =>
+  METHODS.has(method.toLowerCase()) ? `docs-method-${method.toLowerCase()}` : 'docs-method-default'
+const statusClass = (status: string) =>
+  status === '已完成' ? 'docs-status-done' : status === '开发中' ? 'docs-status-wip' : 'docs-status-default'
+---
+
+<header>
+  <p class="docs-eyebrow">Work exported docs</p>
+  <h1>{manual.title}</h1>
+  <p class="docs-meta">
+    来源：
+    <a href={manual.sourceUrl} target="_blank" rel="noreferrer">
+      Apipost「{manual.pathNames.join(' / ')}」
+    </a>{' '}
+    · 上游更新于 {manual.updatedAt}
+  </p>
+</header>
+
+{manual.pages.length === 0 ? (
+  <p class="docs-meta">上游暂无接口。</p>
+) : (
+  <div class="docs-cards">
+    {manual.pages.map((page) => (
+      <a class="docs-card" href={`${base}work-exported-docs/${page.slug}/`}>
+        <div class="docs-card-top">
+          <span class:list={['docs-method', methodClass(page.method)]}>{page.method}</span>
+          {page.markName && <span class:list={['docs-status', statusClass(page.markName)]}>{page.markName}</span>}
+        </div>
+        <h2>{page.title}</h2>
+        <p class="docs-card-endpoint">{page.endpoint}</p>
+        {page.description !== '' && <p class="docs-card-description">{page.description}</p>}
+      </a>
+    ))}
+  </div>
+)}

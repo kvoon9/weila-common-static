@@ -1,6 +1,5 @@
 // 编辑器页的数据源:把仓库里的 Markdown 源文件在构建期读成字符串,随页面一起下发。
-// 只包含可编辑的文档源:src/content/intl/** 与 src/pages/**/*.md;
-// 自动生成的 src/pages/work-exported-docs/** 不进入编辑器。
+// 只包含可编辑的文档源:src/content/intl/** 与 src/pages/**/*.md。
 // 这个模块只允许被 index.astro / editor.astro 的 frontmatter 导入,不要进入客户端运行时。
 
 import type { EditorFile } from './editor-types'
@@ -16,10 +15,6 @@ const pageSources = import.meta.glob('../pages/**/*.md', {
   import: 'default',
   eager: true,
 }) as Record<string, string>
-
-const editablePageSources = Object.fromEntries(
-  Object.entries(pageSources).filter(([file]) => !file.startsWith('../pages/work-exported-docs/')),
-)
 
 function collect(
   sources: Record<string, string>,
@@ -47,6 +42,6 @@ export function loadEditorFiles(): EditorFile[] {
     ...collect(intlSources, '../content/intl/', 'intl', 'src/content/intl', (relative) =>
       relative.replace(/\.md$/, '').split('/').pop(),
     ),
-    ...collect(editablePageSources, '../pages/', 'pages', 'src/pages', () => undefined),
+    ...collect(pageSources, '../pages/', 'pages', 'src/pages', () => undefined),
   ].sort((a, b) => a.id.localeCompare(b.id))
 }

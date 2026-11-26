@@ -1,24 +1,284 @@
 {
   "title": "企业 API 手册",
   "sourceUrl": "https://docs.apipost.net/docs/detail/739e2fbb6870000?target_id=39e2d403b7d0e8&locale=zh-cn",
+  "projectName": "微喇内部WEB接口",
+  "pathNames": ["WEBAPI", "v2", "corp企业", "企业api"],
   "updatedAt": "2026-11-26 16:21",
-  "items": [
+  "tree": [
     {
       "title": "企业api",
       "description": "",
-      "url": null,
+      "kind": "group",
+      "slug": null,
       "children": [
         {
           "title": "获取群历史消息",
           "description": "",
-          "url": "work-exported-docs/msg-get-group-history-msg/",
+          "kind": "api",
+          "slug": "msg-get-group-history-msg",
           "children": []
         },
         {
           "title": "PTT转Audio",
           "description": "",
-          "url": "work-exported-docs/msg-ptt2audio/",
+          "kind": "api",
+          "slug": "msg-ptt2audio",
           "children": []
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "slug": "msg-get-group-history-msg",
+      "title": "获取群历史消息",
+      "description": "",
+      "method": "POST",
+      "endpoint": "https://api.voischat.cn/v2/corpapi/msg/get-group-history-msg",
+      "markName": "已完成",
+      "pathParameters": [],
+      "queryParameters": [
+        {
+          "key": "appid",
+          "type": "string",
+          "required": true,
+          "description": "企业接口APPId,提供企业Number给微喇客服创建AppId与AppKey",
+          "value": "kCRXXYUd6h3p"
+        },
+        {
+          "key": "sign",
+          "type": "string",
+          "required": true,
+          "description": "Unix时间戳",
+          "value": "4d1705d1db0d1e4ee79e4a6c4959e657"
+        },
+        {
+          "key": "et",
+          "type": "string",
+          "required": true,
+          "description": "接口鉴权签名,生成规则 md5(et+appkey)",
+          "value": "1795664919"
+        }
+      ],
+      "headerParameters": [],
+      "cookieParameters": [],
+      "body": "{\n\t\"group_id\": 81000926, // 群ID\n\t\"date\": \"2026-11-26\" // 日期\n}",
+      "examples": [
+        {
+          "name": "成功",
+          "code": "200",
+          "raw": "{\n\t\"errcode\": 0,\n\t\"errmsg\": \"请求成功\",\n\t\"data\": {\n\t\t\"messages\": [\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795671000,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671176,\n\t\t\t\t\"type\": 0,\n\t\t\t\t\"content\": \"[微笑]\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670999,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671167,\n\t\t\t\t\"type\": 6,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"address\": \"\",\n\t\t\t\t\t\"image\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671167_4bf4f8eb.png\",\n\t\t\t\t\t\"latitude\": \"22.543099\",\n\t\t\t\t\t\"longitude\": \"114.057868\",\n\t\t\t\t\t\"name\": \"\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670998,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671157,\n\t\t\t\t\"type\": 2,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"image\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671157_19dbfa85.mp4?x-oss-process=video/snapshot,t_0,f_jpg,m_fast,w_320,ar_auto\",\n\t\t\t\t\t\"video_name\": \"test.mp4\",\n\t\t\t\t\t\"video_size\": \"652870\",\n\t\t\t\t\t\"video_url\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671157_19dbfa85.mp4\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670997,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671077,\n\t\t\t\t\"type\": 4,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"file_name\": \"cdn.pcap\",\n\t\t\t\t\t\"file_size\": \"10235\",\n\t\t\t\t\t\"file_url\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671077_687c7754.pcap\",\n\t\t\t\t\t\"image\": \"https://weilaavatar.oss-cn-shenzhen.aliyuncs.com/file/UNKOWN.png\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670996,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671066,\n\t\t\t\t\"type\": 1,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"image\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671066_0775f094.png\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670995,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671057,\n\t\t\t\t\"type\": 3,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"duration\": 3,\n\t\t\t\t\t\"url\": \"https://cdn.voischat.cn/weilacache/aud/corp/g/81000926/1795670995_3.ptt?duration=3\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670994,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795670994,\n\t\t\t\t\"type\": 0,\n\t\t\t\t\"content\": \"123\"\n\t\t\t}\n\t\t]\n\t}\n}",
+          "fields": [
+            {
+              "key": "errcode",
+              "type": "number",
+              "required": true,
+              "description": "",
+              "value": "0"
+            },
+            {
+              "key": "errmsg",
+              "type": "string",
+              "required": true,
+              "description": "返回文字描述",
+              "value": "请求成功"
+            },
+            {
+              "key": "data",
+              "type": "object",
+              "required": true,
+              "description": "返回数据",
+              "value": ""
+            },
+            {
+              "key": "data.messages",
+              "type": "array",
+              "required": true,
+              "description": "",
+              "value": ""
+            },
+            {
+              "key": "data.messages.msg_id",
+              "type": "number",
+              "required": true,
+              "description": "消息ID",
+              "value": "1795671000"
+            },
+            {
+              "key": "data.messages.user_id",
+              "type": "number",
+              "required": true,
+              "description": "发送者用户ID",
+              "value": "1255059"
+            },
+            {
+              "key": "data.messages.created",
+              "type": "number",
+              "required": true,
+              "description": "发送",
+              "value": "1795671176"
+            },
+            {
+              "key": "data.messages.type",
+              "type": "number",
+              "required": true,
+              "description": "消息类型0文本消息、1图片消息、2视频消息、3语音消息、4文件消息、6位置消息",
+              "value": "0"
+            },
+            {
+              "key": "data.messages.content",
+              "type": "string",
+              "required": true,
+              "description": "",
+              "value": "[微笑]"
+            },
+            {
+              "key": "data.messages.content.address",
+              "type": "string",
+              "required": true,
+              "description": "位置消息地址",
+              "value": ""
+            },
+            {
+              "key": "data.messages.content.image",
+              "type": "string",
+              "required": true,
+              "description": "图片消息",
+              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671167_4bf4f8eb.png"
+            },
+            {
+              "key": "data.messages.content.latitude",
+              "type": "string",
+              "required": true,
+              "description": "位置纬度",
+              "value": "22.543099"
+            },
+            {
+              "key": "data.messages.content.longitude",
+              "type": "string",
+              "required": true,
+              "description": "位置经度",
+              "value": "114.057868"
+            },
+            {
+              "key": "data.messages.content.name",
+              "type": "string",
+              "required": true,
+              "description": "位置消息名称",
+              "value": ""
+            },
+            {
+              "key": "data.messages.content.video_name",
+              "type": "string",
+              "required": true,
+              "description": "视频名称",
+              "value": "test.mp4"
+            },
+            {
+              "key": "data.messages.content.video_size",
+              "type": "string",
+              "required": true,
+              "description": "视频大小",
+              "value": "652870"
+            },
+            {
+              "key": "data.messages.content.video_url",
+              "type": "string",
+              "required": true,
+              "description": "视频url",
+              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671157_19dbfa85.mp4"
+            },
+            {
+              "key": "data.messages.content.file_name",
+              "type": "string",
+              "required": true,
+              "description": "文件",
+              "value": "cdn.pcap"
+            },
+            {
+              "key": "data.messages.content.file_size",
+              "type": "string",
+              "required": true,
+              "description": "文件大小",
+              "value": "10235"
+            },
+            {
+              "key": "data.messages.content.file_url",
+              "type": "string",
+              "required": true,
+              "description": "文件url",
+              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671077_687c7754.pcap"
+            },
+            {
+              "key": "data.messages.content.duration",
+              "type": "number",
+              "required": true,
+              "description": "语音时长",
+              "value": "3"
+            },
+            {
+              "key": "data.messages.content.url",
+              "type": "string",
+              "required": true,
+              "description": "语音url",
+              "value": "https://cdn.voischat.cn/weilacache/aud/corp/g/81000926/1795670995_3.ptt?duration=3"
+            }
+          ]
+        },
+        {
+          "name": "失败",
+          "code": "404",
+          "raw": "{\n\t\"errcode\": 45008,\n\t\"errmsg\": \"用户不是企业成员\"\n}",
+          "fields": []
+        }
+      ]
+    },
+    {
+      "slug": "msg-ptt2audio",
+      "title": "PTT转Audio",
+      "description": "",
+      "method": "POST",
+      "endpoint": "https://api.voischat.cn/v2/corpapi/msg/ptt2audio",
+      "markName": "开发中",
+      "pathParameters": [],
+      "queryParameters": [
+        {
+          "key": "appid",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "value": "kCRXXYUd6h3p"
+        },
+        {
+          "key": "sign",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "value": "4d1705d1db0d1e4ee79e4a6c4959e657"
+        },
+        {
+          "key": "et",
+          "type": "string",
+          "required": true,
+          "description": "",
+          "value": "1795664919"
+        }
+      ],
+      "headerParameters": [],
+      "cookieParameters": [],
+      "body": "{\n    \"url\":\"https://cdn.voischat.cn/weilacache/aud/corp/g/81000926/1795670995_3.ptt?duration=3\", \"format\":\"mp3\"\n}",
+      "examples": [
+        {
+          "name": "成功",
+          "code": "200",
+          "raw": "{\n\t\"errcode\": 0,\n\t\"errmsg\": \"请求成功\",\n\t\"data\": {\n\t\t\"url\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795680837_b204e980.mp3\"\n\t}\n}",
+          "fields": []
+        },
+        {
+          "name": "失败",
+          "code": "404",
+          "raw": "",
+          "fields": []
         }
       ]
     }
