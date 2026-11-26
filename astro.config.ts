@@ -1,7 +1,6 @@
 import vue from '@astrojs/vue'
 // @ts-check
 import { defineConfig } from 'astro/config'
-import { voidPlugin } from 'void'
 
 import UnoCSS from 'unocss/astro'
 
@@ -26,7 +25,6 @@ export default defineConfig({
   ],
 
   vite: {
-    plugins: [voidPlugin()],
     server: {
       cors: true,
       proxy: {

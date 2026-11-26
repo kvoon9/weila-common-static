@@ -1,15 +1,15 @@
 {
   "version": 1,
   "source": {
-    "name": "docs",
+    "name": "voischat-docs",
     "compatibility_date": "2026-02-24",
     "compatibility_flags": ["nodejs_als"]
   },
   "resolved": {
-    "name": "docs",
+    "name": "voischat-docs",
     "compatibility_date": "2026-02-24",
     "compatibility_flags": ["nodejs_als"],
-    "account_id": "28a23c2ec9aeeb01a95276f1d9ca42df"
+    "account_id": "f1aeb479314b25d24bd6626e9e5bbfe9"
   },
-  "text": "{\n  \"name\": \"docs\",\n  \"compatibility_date\": \"2026-02-24\",\n  \"compatibility_flags\": [\n    \"nodejs_als\"\n  ],\n  \"account_id\": \"28a23c2ec9aeeb01a95276f1d9ca42df\"\n}\n"
+  "text": "{\n  \"name\": \"voischat-docs\",\n  \"compatibility_date\": \"2026-02-24\",\n  \"compatibility_flags\": [\n    \"nodejs_als\"\n  ],\n  \"account_id\": \"f1aeb479314b25d24bd6626e9e5bbfe9\"\n}\n"
 }

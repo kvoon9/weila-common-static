@@ -4,9 +4,27 @@ import { File as DiffsFile, FileDiff } from '@pierre/diffs'
 import { Editor } from '@pierre/diffs/edit'
 import { FileTree } from '@pierre/trees'
 import { marked } from 'marked'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 
 const props = defineProps<{ files: EditorFile[] }>()
+
+/** 跟随系统深浅色,Pierre 组件据此切换主题 */
+const isDark = ref(typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+const themeName = computed(() => (isDark.value ? 'pierre-dark' : 'pierre-light'))
+
+if (typeof window !== 'undefined') {
+  const media = window.matchMedia('(prefers-color-scheme: dark)')
+  const onChange = (event: MediaQueryListEvent) => {
+    isDark.value = event.matches
+  }
+  media.addEventListener('change', onChange)
+  onBeforeUnmount(() => media.removeEventListener('change', onChange))
+}
+
+watch(themeName, (name) => {
+  fileView.value?.setOptions({ ...fileView.value.options, theme: name })
+  diffView.value?.setOptions({ ...diffView.value.options, theme: name })
+})
 
 const treeEl = ref<HTMLElement>()
 const editorEl = ref<HTMLElement>()
@@ -126,7 +144,7 @@ function renderDiff(): void {
 
   if (!diffView.value) {
     diffView.value = new FileDiff({
-      theme: 'pierre-light',
+      theme: themeName.value,
       diffStyle: 'unified',
       overflow: 'wrap',
       disableFileHeader: true,
@@ -186,7 +204,7 @@ onMounted(async () => {
 
   try {
     fileView.value = new DiffsFile({
-      theme: 'pierre-light',
+      theme: themeName.value,
       overflow: 'wrap',
       disableFileHeader: true,
       onEditChange: (event) => {
@@ -287,6 +305,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   color: #1f2328;
   background: #fff;
+  color-scheme: light;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
@@ -518,5 +537,105 @@ onBeforeUnmount(() => {
   color: #991b1b;
   background: #fef2f2;
   font-size: 12px;
+}
+
+/* 深色模式:编辑器整页切换为暗色,Pierre 组件与树跟随主题 */
+@media (prefers-color-scheme: dark) {
+  .app {
+    color-scheme: dark;
+    color: #e6edf3;
+    background: #0d1117;
+  }
+
+  .sidebar {
+    border-right-color: #30363d;
+    background: #010409;
+  }
+
+  .sidebar-head {
+    border-bottom-color: #30363d;
+  }
+
+  .sidebar-title {
+    color: #8b949e;
+  }
+
+  .sidebar-count {
+    color: #8b949e;
+    background: #21262d;
+  }
+
+  .sidebar-foot {
+    border-top-color: #30363d;
+    color: #6e7681;
+  }
+
+  .toolbar {
+    border-bottom-color: #30363d;
+  }
+
+  .path-text {
+    color: #c9d1d9;
+  }
+
+  .dirty-chip {
+    color: #f0c36d;
+    background: rgb(129 74 8 / 0.4);
+  }
+
+  .copy-btn {
+    border-color: #f0f6fc;
+    color: #0d1117;
+    background: #e6edf3;
+  }
+
+  .copy-btn:hover {
+    background: #fff;
+  }
+
+  .copy-btn.copied {
+    border-color: #238636;
+    color: #2ea043;
+    background: rgb(35 134 54 / 0.15);
+  }
+
+  .text-btn {
+    color: #8b949e;
+  }
+
+  .text-btn:hover {
+    color: #e6edf3;
+    background: #21262d;
+  }
+
+  .segmented {
+    border-color: #30363d;
+    background: #010409;
+  }
+
+  .segmented button {
+    color: #8b949e;
+  }
+
+  .segmented button.active {
+    color: #e6edf3;
+    background: #21262d;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  }
+
+  .preview-pane {
+    border-left-color: #30363d;
+  }
+
+  .no-diff,
+  .empty-state {
+    color: #6e7681;
+  }
+
+  .error {
+    border-color: #f85149;
+    color: #ff7b72;
+    background: rgb(248 81 73 / 0.1);
+  }
 }
 </style>
