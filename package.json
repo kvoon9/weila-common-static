@@ -8,6 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "tsx scripts/deploy.ts",
+    "build:deploy": "tsx scripts/stage.ts",
+    "deploy:preview": "tsx scripts/stage.ts && wrangler preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
@@ -15,7 +17,7 @@
     "sync:apipost": "tsx scripts/sync-apipost.ts",
     "test": "node --import tsx --test scripts/*.spec.ts",
     "archive": "tsx scripts/archive.ts",
-    "release": "npx bumpp"
+    "release": "pnpm exec bumpp"
   },
   "dependencies": {
     "@astrojs/vue": "^7.0.2",
@@ -40,14 +42,18 @@
     "@unocss/astro": "^66.10.2",
     "@unocss/reset": "^66.10.2",
     "@vitejs/plugin-legacy": "^8.2.3",
+    "bumpp": "^12.3.0",
     "oxfmt": "^0.80.0",
     "oxlint": "^1.82.0",
     "prettier-plugin-astro": "^1.1.2",
     "terser": "^5.51.2",
     "tsx": "^4.23.13",
     "unocss": "^66.10.2",
-    "void": "^1.11.0",
+    "wrangler": "4.168.0",
     "zx": "^8.8.5"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   },
   "packageManager": "pnpm@12.4.1+sha512.2e81e399d73fe8390dab25e06aa788ab7a5908248d2f5a370f82b481147a6a7a367bf8048f9a6fdb6460f21a66f0542dedb8b94ca2c8723596741920b1656d4c"
 }
