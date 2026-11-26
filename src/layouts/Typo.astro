@@ -1,10 +1,28 @@
 ---
+import CopyEditButton from '~/components/CopyEditButton.vue'
 import NavigationDropdown from '~/components/NavigationDropdown.vue'
 import 'github-markdown-css/github-markdown.css'
 
-const { frontmatter, headings } = Astro.props
+const { frontmatter, headings, url } = Astro.props
 const navigation = frontmatter?.navigation
 const title = frontmatter?.title || headings?.find(h => h.depth === 1)?.text || 'Weila Static'
+
+// 「复制 Markdown / 打开编辑器」:md 单语页提供源码与编辑器深链(?raw 只读字符串)
+const mdSources = import.meta.glob('~/pages/**/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>
+
+const copySources: Record<string, { markdown: string, editorPath: string }> = {}
+{
+  // url 形如 /common/android/privacy/,去掉 base 与尾斜杠后匹配 pages/<路径>.md
+  const pagePath = (url ?? '').replace(/^\/common\//, '').replace(/\/$/, '')
+  const suffix = `pages/${pagePath}.md`
+  const source = Object.entries(mdSources).find(([f]) => f.endsWith(suffix))
+  if (source != null)
+    copySources['zh-CN'] = { markdown: source[1], editorPath: `pages/${pagePath}.md` }
+}
 ---
 
 <!doctype html>
@@ -18,8 +36,15 @@ const title = frontmatter?.title || headings?.find(h => h.depth === 1)?.text || 
     <title>{title}</title>
   </head>
   <body class="markdown-body">
-    <!-- 只在有 navigation 数据时显示下拉按钮 -->
-    {navigation && <NavigationDropdown navigation={navigation} client:load />}
+    <!-- 右上角操作区:复制/编辑器按钮与 Docs 导航同一行、同一套胶囊视觉 -->
+    <div id="page-actions">
+      {Object.keys(copySources).length > 0 && (
+        <CopyEditButton client:load sources={copySources} />
+      )}
+
+      <!-- 只在有 navigation 数据时显示下拉按钮 -->
+      {navigation && <NavigationDropdown navigation={navigation} client:load />}
+    </div>
 
     <main class="mxa p8 container">
       <slot />
@@ -33,5 +58,16 @@ const title = frontmatter?.title || headings?.find(h => h.depth === 1)?.text || 
     margin: 0;
     width: 100%;
     height: 100%;
+  }
+
+  /* 右上角操作区:同一行、同视觉规格(胶囊高度 2.25rem) */
+  #page-actions {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 </style>
