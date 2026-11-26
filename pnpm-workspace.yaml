@@ -2,20 +2,20 @@ minimumReleaseAgeExcludePrune: true
 
 trustPolicy: no-downgrade
 trustPolicyExclude:
-  # 官方包（npm CLI 团队签名），仅因发布早于 attestation 时代而被 no-downgrade 误报
+  # Official package (signed by the npm CLI team), flagged by no-downgrade only
+  # because it predates the attestation era.
   - semver@6.3.1
-  # Pierre 团队 2.x 起换了发布流水线，暂无 npm provenance，与 1.x 相比触发 no-downgrade。
-  # 只排除这一个精确版本，@pierre/diffs 的组件依赖它。
+  # The Pierre team switched release pipelines at 2.x and ships no npm provenance
+  # yet, which trips no-downgrade against 1.x. Exclude exactly this version; a
+  # component of @pierre/diffs depends on it.
   - '@pierre/theme@2.1.0'
 
 shellEmulator: true
 
 allowBuilds:
-  # 仅 postinstall 广告，无需执行
+  # Postinstall advertising only, never run it.
   core-js: false
-  # vite / astro 构建链必需
+  # Required by the vite / astro build chain.
   esbuild: true
-  # cloudflare adapter / void 本地运行时
+  # Required by the Cloudflare adapter and the local wrangler runtime.
   workerd: true
-  # void/better-auth 的本地数据库依赖，静态站点构建无需编译原生模块
-  better-sqlite3: false
