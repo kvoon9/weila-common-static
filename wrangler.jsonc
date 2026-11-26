@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "voischat-docs",
+  "account_id": "f1aeb479314b25d24bd6626e9e5bbfe9",
   "compatibility_date": "2026-02-24",
   "compatibility_flags": ["nodejs_als"],
   "assets": {
