@@ -5,7 +5,7 @@ export default defineConfig({
     trailingSlash: true,
   },
   cloudflare: {
-    name: 'docs',
+    name: 'voischat-docs',
     compatibility_date: '2026-02-24',
     compatibility_flags: ['nodejs_als'],
   },
