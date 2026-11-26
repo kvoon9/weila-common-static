@@ -17,3 +17,5 @@ allowBuilds:
   esbuild: true
   # cloudflare adapter / void 本地运行时
   workerd: true
+  # void/better-auth 的本地数据库依赖，静态站点构建无需编译原生模块
+  better-sqlite3: false
