@@ -78,9 +78,9 @@ const requireString = (value: unknown, message: string): string => {
 
 function parseParams(value: unknown, label: string): Parameter[] {
   if (value === undefined || value === null) return []
-  if (!Array.isArray(value)) throw new SyncError(`${label} 不是数组`)
+  if (!Array.isArray(value)) throw new SyncError(`${label} is not an array`)
   return value.map((entry, index) => {
-    if (!isRecord(entry)) throw new SyncError(`${label}[${index}] 不是对象`)
+    if (!isRecord(entry)) throw new SyncError(`${label}[${index}] is not an object`)
     return {
       key: asString(entry.key),
       type: asString(entry.field_type),
@@ -94,7 +94,7 @@ function parseParams(value: unknown, label: string): Parameter[] {
 function requestParams(request: RawRecord, group: string): Parameter[] {
   const container = request[group]
   if (container === undefined || container === null) return []
-  if (!isRecord(container)) throw new SyncError(`request.${group} 不是对象`)
+  if (!isRecord(container)) throw new SyncError(`request.${group} is not an object`)
   return parseParams(container.parameter, `request.${group}.parameter`)
 }
 
@@ -111,41 +111,41 @@ function normalizeRaw(raw: string): string {
 
 function parseExamples(response: unknown, apiName: string): ResponseExample[] {
   if (response === undefined || response === null) return []
-  if (!isRecord(response)) throw new SyncError(`接口「${apiName}」的 response 不是对象`)
+  if (!isRecord(response)) throw new SyncError(`response of API "${apiName}" is not an object`)
   if (response.example === undefined || response.example === null) return []
-  if (!Array.isArray(response.example)) throw new SyncError(`接口「${apiName}」的 response.example 不是数组`)
+  if (!Array.isArray(response.example)) throw new SyncError(`response.example of API "${apiName}" is not an array`)
   return response.example.map((entry, index) => {
-    if (!isRecord(entry)) throw new SyncError(`接口「${apiName}」的 response.example[${index}] 不是对象`)
+    if (!isRecord(entry)) throw new SyncError(`response.example[${index}] of API "${apiName}" is not an object`)
     const expect = isRecord(entry.expect) ? entry.expect : {}
     return {
       name: asString(expect.name),
       code: asString(expect.code),
       raw: normalizeRaw(asString(entry.raw)),
-      fields: parseParams(entry.raw_parameter, `接口「${apiName}」的 response.example[${index}].raw_parameter`),
+      fields: parseParams(entry.raw_parameter, `response.example[${index}].raw_parameter of API "${apiName}"`),
     }
   })
 }
 
 function parseApi(entry: RawRecord, marks: Map<string, string>): ApiNode {
-  const name = requireString(entry.name, `接口 ${asString(entry.target_id)} 缺少 name`)
-  const method = requireString(entry.method, `接口「${name}」缺少 method`)
-  const rawUrl = requireString(entry.url, `接口「${name}」缺少 url`)
+  const name = requireString(entry.name, `API ${asString(entry.target_id)} is missing name`)
+  const method = requireString(entry.method, `API "${name}" is missing method`)
+  const rawUrl = requireString(entry.url, `API "${name}" is missing url`)
   let endpoint: string
   try {
     const parsed = new URL(rawUrl)
     endpoint = `${parsed.origin}${parsed.pathname}`
   } catch {
-    throw new SyncError(`接口「${name}」的 url 无法解析：${rawUrl}`)
+    throw new SyncError(`url of API "${name}" cannot be parsed: ${rawUrl}`)
   }
   const markName = marks.get(asString(entry.mark_id)) || null
 
   const request = entry.request
-  if (!isRecord(request)) throw new SyncError(`接口「${name}」缺少 request`)
+  if (!isRecord(request)) throw new SyncError(`API "${name}" is missing request`)
   const body = request.body
-  if (!isRecord(body)) throw new SyncError(`接口「${name}」缺少 request.body`)
+  if (!isRecord(body)) throw new SyncError(`API "${name}" is missing request.body`)
   const mode = body.mode
   if (mode !== 'json' && mode !== 'none') {
-    throw new SyncError(`接口「${name}」的 body.mode 不是 json 或 none：${asString(mode)}`)
+    throw new SyncError(`body.mode of API "${name}" is not json or none: ${asString(mode)}`)
   }
   const rawBody = mode === 'json' ? normalizeRaw(asString(body.raw)) : ''
 
@@ -170,7 +170,7 @@ function parseApi(entry: RawRecord, marks: Map<string, string>): ApiNode {
 function parseFolder(entry: RawRecord): FolderNode {
   return {
     kind: 'folder',
-    name: requireString(entry.name, `目录 ${asString(entry.target_id)} 缺少 name`),
+    name: requireString(entry.name, `folder ${asString(entry.target_id)} is missing name`),
     description: asString(entry.description),
     children: [],
   }
@@ -181,7 +181,7 @@ function parseMarks(project: unknown): Map<string, string> {
   if (!isRecord(project)) return marks
   const list = project.marks
   if (list === undefined || list === null) return marks
-  if (!Array.isArray(list)) throw new SyncError('project.marks 不是数组')
+  if (!Array.isArray(list)) throw new SyncError('project.marks is not an array')
   for (const entry of list) {
     if (!isRecord(entry)) continue
     const id = asString(entry.mark_id)
@@ -199,34 +199,34 @@ function latestUpdatedAt(list: RawRecord[]): string {
     const value = entry.updated_at
     if (typeof value !== 'string' || value === '') continue
     const time = Date.parse(value)
-    if (Number.isNaN(time)) throw new SyncError(`无法解析 updated_at：${value}`)
+    if (Number.isNaN(time)) throw new SyncError(`cannot parse updated_at: ${value}`)
     if (time > latestTime) {
       latestTime = time
       latest = value
     }
   }
-  if (latest === null) throw new SyncError('list 中没有任何 updated_at')
+  if (latest === null) throw new SyncError('no updated_at found in list')
   const match = TIME_PATTERN.exec(latest)
-  if (match === null) throw new SyncError(`无法格式化 updated_at：${latest}`)
+  if (match === null) throw new SyncError(`cannot format updated_at: ${latest}`)
   return `${match[1]} ${match[2]}`
 }
 
 export function parseDoc(json: unknown): Manual {
-  if (!isRecord(json)) throw new SyncError('响应不是对象')
-  if (json.code !== 0) throw new SyncError(`接口返回 code ${asString(json.code)}：${asString(json.msg)}`)
+  if (!isRecord(json)) throw new SyncError('response is not an object')
+  if (json.code !== 0) throw new SyncError(`API returned code ${asString(json.code)}: ${asString(json.msg)}`)
   const data = json.data
-  if (!isRecord(data) || !Array.isArray(data.list)) throw new SyncError('响应缺少 data.list')
+  if (!isRecord(data) || !Array.isArray(data.list)) throw new SyncError('response is missing data.list')
   const list = data.list.filter((item): item is RawRecord => isRecord(item))
-  if (list.length !== data.list.length) throw new SyncError('data.list 中存在非对象条目')
+  if (list.length !== data.list.length) throw new SyncError('data.list contains non-object entries')
 
   const marks = parseMarks(data.project)
   const entries = new Map<string, Entry>()
   for (const [index, item] of list.entries()) {
-    const id = requireString(item.target_id, `list[${index}] 缺少 target_id`)
-    const parentId = requireString(item.parent_id, `list[${index}] 缺少 parent_id`)
+    const id = requireString(item.target_id, `list[${index}] is missing target_id`)
+    const parentId = requireString(item.parent_id, `list[${index}] is missing parent_id`)
     const type = item.target_type
     if (type !== 'api' && type !== 'folder') {
-      throw new SyncError(`list[${index}]（${id}）的 target_type 不是 api 或 folder：${asString(type)}`)
+      throw new SyncError(`target_type of list[${index}] (${id}) is not api or folder: ${asString(type)}`)
     }
     entries.set(id, {
       id,
@@ -240,18 +240,18 @@ export function parseDoc(json: unknown): Manual {
     const seen = new Set<string>()
     let current = entry.id
     while (true) {
-      if (seen.has(current)) throw new SyncError(`parent_id 成环：${current}`)
+      if (seen.has(current)) throw new SyncError(`parent_id cycle at ${current}`)
       seen.add(current)
       const item = entries.get(current)
-      if (item === undefined) throw new SyncError(`parent_id ${current} 不在 list 中`)
+      if (item === undefined) throw new SyncError(`parent_id ${current} is not in list`)
       if (item.parentId === '0') break
       current = item.parentId
     }
   }
 
   const root = entries.get(ROOT_TARGET_ID)
-  if (root === undefined) throw new SyncError(`list 中缺少根目录 ${ROOT_TARGET_ID}`)
-  if (root.node.kind !== 'folder') throw new SyncError(`根目录 ${ROOT_TARGET_ID} 不是 folder`)
+  if (root === undefined) throw new SyncError(`list is missing the root folder ${ROOT_TARGET_ID}`)
+  if (root.node.kind !== 'folder') throw new SyncError(`root folder ${ROOT_TARGET_ID} is not a folder`)
 
   const pathNames: string[] = []
   for (let cursor: Entry | undefined = root; cursor !== undefined;) {
@@ -277,7 +277,7 @@ export function parseDoc(json: unknown): Manual {
   return {
     title: PAGE_TITLE,
     sourceUrl: SOURCE_URL,
-    projectName: requireString(data.project_name, '响应缺少 data.project_name'),
+    projectName: requireString(data.project_name, 'response is missing data.project_name'),
     pathNames,
     updatedAt: latestUpdatedAt(list),
     children: (childrenByParent.get(root.id) ?? []).map(attach),
@@ -359,7 +359,7 @@ export function buildData(manual: Manual): WorkExportedDocsData {
 
 async function fetchDoc(): Promise<unknown> {
   const response = await fetch(DOC_URL)
-  if (!response.ok) throw new SyncError(`下载 Apipost 文档失败：HTTP ${response.status}`)
+  if (!response.ok) throw new SyncError(`failed to download the Apipost doc: HTTP ${response.status}`)
   return response.json()
 }
 
@@ -380,14 +380,14 @@ async function main(argv: string[]): Promise<number> {
     const content = `${JSON.stringify(buildData(parseDoc(await fetchDoc())), null, 2)}\n`
     if (argv.includes('--check')) {
       if ((await readText(DATA_PATH)) === content) {
-        console.log(`${DATA_PATH} 与上游一致`)
+        console.log(`${DATA_PATH} is up to date with the upstream`)
         return 0
       }
-      console.error(`${DATA_PATH} 与上游不一致，请运行 pnpm sync:apipost 生成最新内容`)
+      console.error(`${DATA_PATH} is out of date with the upstream; run pnpm sync:apipost to regenerate it`)
       return 1
     }
     await writeFileAtomic(DATA_PATH, content)
-    console.log(`已写入 ${DATA_PATH}`)
+    console.log(`Wrote ${DATA_PATH}`)
     return 0
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))
