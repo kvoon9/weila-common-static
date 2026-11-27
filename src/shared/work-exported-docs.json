@@ -8,7 +8,7 @@
     "corp企业",
     "企业api"
   ],
-  "updatedAt": "2026-11-26 16:21",
+  "updatedAt": "2026-11-27 18:09",
   "tree": [
     {
       "title": "企业api",
@@ -39,7 +39,7 @@
       "title": "获取群历史消息",
       "description": "",
       "method": "POST",
-      "endpoint": "https://api.voischat.cn/v2/corpapi/msg/get-group-history-msg",
+      "endpoint": "https://192.168.0.106/v2/corpapi/msg/get-group-history-msg",
       "markName": "已完成",
       "pathParameters": [],
       "queryParameters": [
@@ -48,31 +48,31 @@
           "type": "string",
           "required": true,
           "description": "企业接口APPId,提供企业Number给微喇客服创建AppId与AppKey",
-          "value": "kCRXXYUd6h3p"
+          "value": "uFQMYgfPPkNp"
         },
         {
           "key": "sign",
           "type": "string",
           "required": true,
           "description": "Unix时间戳",
-          "value": "4d1705d1db0d1e4ee79e4a6c4959e657"
+          "value": "5c3b00b4d1fc6b785577cd3e01e9c971"
         },
         {
           "key": "et",
           "type": "string",
           "required": true,
           "description": "接口鉴权签名,生成规则 md5(et+appkey)",
-          "value": "1795664919"
+          "value": "1795773534"
         }
       ],
       "headerParameters": [],
       "cookieParameters": [],
-      "body": "{\n\t\"group_id\": 81000926, // 群ID\n\t\"date\": \"2026-11-26\" // 日期\n}",
+      "body": "{\n\t\"group_id\": 81000927, // 群ID\n\t\"date\": \"2026-11-27\" // 日期\n}",
       "examples": [
         {
           "name": "成功",
           "code": "200",
-          "raw": "{\n\t\"errcode\": 0,\n\t\"errmsg\": \"请求成功\",\n\t\"data\": {\n\t\t\"messages\": [\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795671000,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671176,\n\t\t\t\t\"type\": 0,\n\t\t\t\t\"content\": \"[微笑]\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670999,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671167,\n\t\t\t\t\"type\": 6,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"address\": \"\",\n\t\t\t\t\t\"image\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671167_4bf4f8eb.png\",\n\t\t\t\t\t\"latitude\": \"22.543099\",\n\t\t\t\t\t\"longitude\": \"114.057868\",\n\t\t\t\t\t\"name\": \"\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670998,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671157,\n\t\t\t\t\"type\": 2,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"image\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671157_19dbfa85.mp4?x-oss-process=video/snapshot,t_0,f_jpg,m_fast,w_320,ar_auto\",\n\t\t\t\t\t\"video_name\": \"test.mp4\",\n\t\t\t\t\t\"video_size\": \"652870\",\n\t\t\t\t\t\"video_url\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671157_19dbfa85.mp4\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670997,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671077,\n\t\t\t\t\"type\": 4,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"file_name\": \"cdn.pcap\",\n\t\t\t\t\t\"file_size\": \"10235\",\n\t\t\t\t\t\"file_url\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671077_687c7754.pcap\",\n\t\t\t\t\t\"image\": \"https://weilaavatar.oss-cn-shenzhen.aliyuncs.com/file/UNKOWN.png\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670996,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671066,\n\t\t\t\t\"type\": 1,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"image\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671066_0775f094.png\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670995,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795671057,\n\t\t\t\t\"type\": 3,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"duration\": 3,\n\t\t\t\t\t\"url\": \"https://cdn.voischat.cn/weilacache/aud/corp/g/81000926/1795670995_3.ptt?duration=3\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795670994,\n\t\t\t\t\"user_id\": 1255059,\n\t\t\t\t\"created\": 1795670994,\n\t\t\t\t\"type\": 0,\n\t\t\t\t\"content\": \"123\"\n\t\t\t}\n\t\t]\n\t}\n}",
+          "raw": "{\n\t\"errcode\": 0,\n\t\"errmsg\": \"请求成功\",\n\t\"data\": {\n\t\t\"messages\": [\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795773657,\n\t\t\t\t\"user_id\": 1255063,\n\t\t\t\t\"created\": 1795773747,\n\t\t\t\t\"type\": 6,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"address\": \"\",\n\t\t\t\t\t\"latitude\": \"22.543099\",\n\t\t\t\t\t\"longitude\": \"114.057868\",\n\t\t\t\t\t\"name\": \"\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795773656,\n\t\t\t\t\"user_id\": 1255063,\n\t\t\t\t\"created\": 1795773741,\n\t\t\t\t\"type\": 2,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"video_name\": \"test.mp4\",\n\t\t\t\t\t\"video_size\": \"652870\",\n\t\t\t\t\t\"video_url\": \"https://cdn.voischat.cn/weilacache/tmp/2026-11-27/1795773741_a9ec9d37.mp4\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795773653,\n\t\t\t\t\"user_id\": 1255078,\n\t\t\t\t\"created\": 1795773669,\n\t\t\t\t\"type\": 4,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"file_name\": \"10133565-2-10490566-177996701.txt\",\n\t\t\t\t\t\"file_size\": \"5259\",\n\t\t\t\t\t\"file_url\": \"https://weilacache.oss-cn-shenzhen.aliyuncs.com/message/2026-11-27/81000927-18/1255078-18-01-09-10.txt\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795773650,\n\t\t\t\t\"user_id\": 1255078,\n\t\t\t\t\"created\": 1795773652,\n\t\t\t\t\"type\": 1,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"image\": \"https://weilacache.oss-cn-shenzhen.aliyuncs.com/message/2026-11-27/81000927-18/1255078-18-00-52-6.jpg\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"msg_id\": 1795773649,\n\t\t\t\t\"user_id\": 1255078,\n\t\t\t\t\"created\": 1795773649,\n\t\t\t\t\"type\": 3,\n\t\t\t\t\"content\": {\n\t\t\t\t\t\"duration\": 2,\n\t\t\t\t\t\"url\": \"https://cdn.voischat.cn/weilacache/aud/corp/g/81000927/1795773649_2.ptt?duration=2\"\n\t\t\t\t}\n\t\t\t}\n\t\t]\n\t}\n}",
           "fields": [
             {
               "key": "errcode",
@@ -107,35 +107,35 @@
               "type": "number",
               "required": true,
               "description": "消息ID",
-              "value": "1795671000"
+              "value": "1795773657"
             },
             {
               "key": "data.messages.user_id",
               "type": "number",
               "required": true,
               "description": "发送者用户ID",
-              "value": "1255059"
+              "value": "1255063"
             },
             {
               "key": "data.messages.created",
               "type": "number",
               "required": true,
               "description": "发送",
-              "value": "1795671176"
+              "value": "1795773747"
             },
             {
               "key": "data.messages.type",
               "type": "number",
               "required": true,
               "description": "消息类型0文本消息、1图片消息、2视频消息、3语音消息、4文件消息、6位置消息",
-              "value": "0"
+              "value": "6"
             },
             {
               "key": "data.messages.content",
               "type": "string",
               "required": true,
               "description": "",
-              "value": "[微笑]"
+              "value": ""
             },
             {
               "key": "data.messages.content.address",
@@ -143,13 +143,6 @@
               "required": true,
               "description": "位置消息地址",
               "value": ""
-            },
-            {
-              "key": "data.messages.content.image",
-              "type": "string",
-              "required": true,
-              "description": "图片消息",
-              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671167_4bf4f8eb.png"
             },
             {
               "key": "data.messages.content.latitude",
@@ -191,42 +184,49 @@
               "type": "string",
               "required": true,
               "description": "视频url",
-              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671157_19dbfa85.mp4"
+              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-27/1795773741_a9ec9d37.mp4"
             },
             {
               "key": "data.messages.content.file_name",
               "type": "string",
               "required": true,
               "description": "文件",
-              "value": "cdn.pcap"
+              "value": "1789717724_12259_38_3.ptt"
             },
             {
               "key": "data.messages.content.file_size",
               "type": "string",
               "required": true,
               "description": "文件大小",
-              "value": "10235"
+              "value": "20422"
             },
             {
               "key": "data.messages.content.file_url",
               "type": "string",
               "required": true,
               "description": "文件url",
-              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-26/1795671077_687c7754.pcap"
+              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-27/1795773687_996c7582.ptt"
+            },
+            {
+              "key": "data.messages.content.image",
+              "type": "string",
+              "required": true,
+              "description": "图片消息",
+              "value": "https://cdn.voischat.cn/weilacache/tmp/2026-11-27/1795773676_879386d7.jpg"
             },
             {
               "key": "data.messages.content.duration",
               "type": "number",
               "required": true,
               "description": "语音时长",
-              "value": "3"
+              "value": "2"
             },
             {
               "key": "data.messages.content.url",
               "type": "string",
               "required": true,
               "description": "语音url",
-              "value": "https://cdn.voischat.cn/weilacache/aud/corp/g/81000926/1795670995_3.ptt?duration=3"
+              "value": "https://cdn.voischat.cn/weilacache/aud/corp/g/81000927/1795773649_2.ptt?duration=2"
             }
           ]
         },
