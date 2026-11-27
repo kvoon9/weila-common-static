@@ -10,6 +10,4 @@ export interface EditorFile {
   content: string
   /** 正文首个 h1,文件树用它作为显示名 */
   title: string
-  /** 多语言文档的语言代码;单语页面为 undefined */
-  lang?: string
 }

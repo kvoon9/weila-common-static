@@ -48,6 +48,66 @@ const dirty = computed(() => !!current.value && content.value !== current.value.
 const previewHtml = computed(() => marked.parse(stripFrontmatter(content.value), { async: false }) as string)
 const modifiedIds = computed(() => Object.keys(scratch.value))
 
+// 当前文件对应的线上文档路由:intl/<文档>/<语言>.md → /intl/<文档>,pages/<路径>.md → /<路径>
+const docHref = computed(() => {
+  const id = current.value?.id
+  if (!id) return null
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+  if (id.startsWith('intl/')) return `${base}/intl/${id.slice('intl/'.length).replace(/\/[^/]+\.md$/, '')}`
+  if (id.startsWith('pages/')) return `${base}/${id.slice('pages/'.length).replace(/\.md$/, '')}`
+  return null
+})
+
+interface SearchHit {
+  file: EditorFile
+  /** 正文命中时,第一条命中所在行的上下文片段;仅标题或路径命中时为 null */
+  snippet: { before: string; match: string; after: string } | null
+  /** 正文命中次数 */
+  count: number
+}
+
+const searchQuery = ref('')
+
+// 标题、路径、正文统一搜索;正文命中时带出第一条命中所在行的上下文
+const searchHits = computed<SearchHit[]>(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return []
+
+  const hits: SearchHit[] = []
+  for (const file of props.files) {
+    const lower = file.content.toLowerCase()
+    const first = lower.indexOf(query)
+    const named = file.title.toLowerCase().includes(query) || file.id.toLowerCase().includes(query)
+    if (first === -1 && !named) continue
+
+    let snippet: SearchHit['snippet'] = null
+    let count = 0
+    if (first !== -1) {
+      for (let at = first; at !== -1; at = lower.indexOf(query, at + query.length)) count++
+
+      const lineStart = file.content.lastIndexOf('\n', first) + 1
+      const newline = file.content.indexOf('\n', first)
+      const lineEnd = newline === -1 ? file.content.length : newline
+      const before = file.content.slice(Math.max(lineStart, first - 40), first)
+      const match = file.content.slice(first, first + query.length)
+      const after = file.content.slice(first + query.length, Math.min(lineEnd, first + query.length + 80))
+      snippet = {
+        before: (first - lineStart > 40 ? '…' : '') + before,
+        match,
+        after: after + (lineEnd > first + query.length + 80 ? '…' : ''),
+      }
+    }
+
+    hits.push({ file, snippet, count })
+  }
+  return hits
+})
+
+function openHit(hit: SearchHit): void {
+  searchQuery.value = ''
+  void openFile(hit.file.id)
+}
+
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
 let treeTitleObserver: MutationObserver | undefined
 
@@ -72,10 +132,9 @@ function stripFrontmatter(source: string): string {
   return source.startsWith('---') ? source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '') : source
 }
 
-/** 文件树显示名:Markdown 标题 + 语言,替代 en.md / zh-CN.md 这种难辨认的文件名 */
+/** 文件树显示名:Markdown 标题,替代 en.md / zh-CN.md 这种难辨认的文件名 */
 function treeLabel(file: EditorFile): string {
-  const title = file.title.replace(/[/\\]/g, '／')
-  return file.lang ? `${title} (${file.lang})` : title
+  return file.title.replace(/[/\\]/g, '／')
 }
 
 function treePath(file: EditorFile): string {
@@ -135,6 +194,8 @@ async function openFile(id: string): Promise<void> {
 
   await nextTick()
   renderFile()
+
+  tree.value?.scrollToPath(treePathById.get(id) ?? id, { offset: 'nearest' })
 }
 
 function resetFile(): void {
@@ -210,7 +271,7 @@ async function showDiff(): Promise<void> {
 }
 
 onMounted(async () => {
-  // ?file= 深链:文档页「打开编辑器」直接定位到对应文件
+  // ?file= 深链:直接定位到指定文件(兼容历史链接)
   const query = new URLSearchParams(location.search).get('file')
   const deepFile = query ? props.files.find((file) => file.id === query) : undefined
   if (deepFile) {
@@ -225,9 +286,7 @@ onMounted(async () => {
     initialExpansion: 'open',
     initialSelectedPaths: id ? [treePathById.get(id) ?? id] : [],
     flattenEmptyDirectories: true,
-    search: true,
     labels: {
-      searchPlaceholder: '搜索文档…',
       gitStatusTitles: {
         modified: '有临时修改',
         added: '新增',
@@ -284,7 +343,34 @@ onBeforeUnmount(() => {
         <span class="sidebar-title">文档</span>
         <span class="sidebar-count">{{ files.length }}</span>
       </div>
-      <div ref="treeEl" class="tree" />
+      <div class="search">
+        <input
+          v-model="searchQuery"
+          type="search"
+          class="search-input"
+          placeholder="搜索标题 / 路径 / 内容"
+          aria-label="搜索文档"
+          @keydown.esc="searchQuery = ''"
+        />
+      </div>
+
+      <div class="tree-area">
+        <div ref="treeEl" class="tree" />
+        <div v-if="searchQuery.trim()" class="search-results">
+          <div v-if="!searchHits.length" class="search-empty">没有匹配的文档</div>
+          <button v-for="hit in searchHits" :key="hit.file.id" type="button" class="hit" @click="openHit(hit)">
+            <span class="hit-head">
+              <span class="hit-title">{{ hit.file.title }}</span>
+              <span v-if="hit.count > 1" class="hit-count">{{ hit.count }} 处</span>
+            </span>
+            <span class="hit-path">{{ hit.file.id }}</span>
+            <span v-if="hit.snippet" class="hit-snippet"
+              >{{ hit.snippet.before }}<mark>{{ hit.snippet.match }}</mark>{{ hit.snippet.after }}</span
+            >
+          </button>
+        </div>
+      </div>
+
       <div class="sidebar-foot">修改仅在本页生效,不会保存到仓库</div>
     </aside>
 
@@ -296,6 +382,7 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="actions">
+          <a v-if="docHref" class="text-btn" :href="docHref" target="_blank" rel="noopener noreferrer">查看文档</a>
           <button type="button" class="copy-btn" :class="{ copied }" @click="copySource">
             {{ copied ? '已复制' : '复制 Markdown' }}
           </button>
@@ -390,10 +477,115 @@ onBeforeUnmount(() => {
   font-size: 11px;
 }
 
-.tree {
+.search {
+  flex: none;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.search-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #1f2328;
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+}
+
+.search-input:focus-visible {
+  border-color: #3b82f6;
+  outline: 2px solid rgb(59 130 246 / 0.2);
+}
+
+.tree-area {
+  position: relative;
   flex: 1;
   min-height: 0;
+}
+
+.tree {
+  height: 100%;
   overflow: hidden;
+}
+
+.search-results {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  background: #fafafa;
+}
+
+.search-empty {
+  padding: 16px 12px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.hit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 1px solid #f0f0f0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hit:hover {
+  background: #f3f4f6;
+}
+
+.hit-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.hit-title {
+  overflow: hidden;
+  color: #1f2328;
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hit-count {
+  flex: none;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.hit-path {
+  overflow: hidden;
+  color: #9ca3af;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hit-snippet {
+  overflow: hidden;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hit-snippet mark {
+  padding: 0 1px;
+  border-radius: 2px;
+  color: #92400e;
+  background: #fef3c7;
 }
 
 .sidebar-foot {
@@ -480,6 +672,7 @@ onBeforeUnmount(() => {
   color: #6b7280;
   background: transparent;
   font-size: 12px;
+  text-decoration: none;
   cursor: pointer;
 }
 
