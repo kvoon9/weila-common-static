@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Set node
         uses: actions/setup-node@v7
         with:
