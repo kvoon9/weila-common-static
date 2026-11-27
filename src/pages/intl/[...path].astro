@@ -1,5 +1,4 @@
 ---
-import CopyEditButton from '~/components/CopyEditButton.vue'
 // intl 多语言文档的统一入口页。
 //
 // URL 规范:干净的裸路径(/common/intl/ios/personal/license),不携带语言信息。
@@ -17,13 +16,6 @@ import CopyEditButton from '~/components/CopyEditButton.vue'
 import { DEFAULT_LOCALE, LANG_LABELS, loadIntlDocs, pickDefaultLang } from '~/shared/intl'
 import 'github-markdown-css/github-markdown.css'
 
-// 构建期把各语言源码原样读进来,供「复制 Markdown」使用(?raw 只读字符串,开销很小)
-const rawSources = import.meta.glob('~/content/intl/**/*.md', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>
-
 // 每篇文档生成一个干净裸路径页面。
 // NOTE: Astro 会把 getStaticPaths 单独抽取执行,不能引用模块顶层变量,这里独立加载。
 export async function getStaticPaths() {
@@ -37,14 +29,6 @@ const doc = documents.get(Astro.params.path ?? '')
 const langs = doc?.langs ?? []
 const titles = doc?.titles ?? {}
 const defaultLang = doc ? pickDefaultLang(doc) : DEFAULT_LOCALE
-
-// 「复制 Markdown / 打开编辑器」按钮的数据:当前文档每种语言的源码与编辑器文件 id
-const copySources: Record<string, { markdown: string; editorPath: string }> = {}
-for (const lang of langs) {
-  const suffix = `content/intl/${doc!.path}/${lang}.md`
-  const source = Object.entries(rawSources).find(([file]) => file.endsWith(suffix))
-  if (source != null) copySources[lang] = { markdown: source[1], editorPath: `intl/${doc!.path}/${lang}.md` }
-}
 ---
 
 <!doctype html>
@@ -57,10 +41,8 @@ for (const lang of langs) {
     <title>{titles[defaultLang] ?? 'Weila Static'}</title>
   </head>
   <body class="markdown-body">
-    <!-- 右上角操作区:复制/编辑器按钮与语言切换同一行、同一套胶囊视觉 -->
+    <!-- 右上角操作区:语言切换 -->
     <div id="page-actions">
-      {Object.keys(copySources).length > 0 && <CopyEditButton client:load sources={copySources} />}
-
       {langs.length > 1 && (
         <div id="lang-switcher" role="group" aria-label="语言 / Language">
           {langs.map((lang) => (
