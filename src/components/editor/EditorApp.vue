@@ -52,9 +52,9 @@ const modifiedIds = computed(() => Object.keys(scratch.value))
 const docHref = computed(() => {
   const id = current.value?.id
   if (!id) return null
-  if (id.startsWith('intl/'))
-    return `${import.meta.env.BASE_URL}intl/${id.slice('intl/'.length).replace(/\/[^/]+\.md$/, '')}`
-  if (id.startsWith('pages/')) return `${import.meta.env.BASE_URL}${id.slice('pages/'.length).replace(/\.md$/, '')}`
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+  if (id.startsWith('intl/')) return `${base}/intl/${id.slice('intl/'.length).replace(/\/[^/]+\.md$/, '')}`
+  if (id.startsWith('pages/')) return `${base}/${id.slice('pages/'.length).replace(/\.md$/, '')}`
   return null
 })
 
@@ -195,10 +195,7 @@ async function openFile(id: string): Promise<void> {
   await nextTick()
   renderFile()
 
-  // 搜索结果打开文件时同步树的选中项,并滚到可见位置
-  const path = treePathById.get(id) ?? id
-  tree.value?.getItem(path)?.select()
-  tree.value?.scrollToPath(path, { offset: 'nearest' })
+  tree.value?.scrollToPath(treePathById.get(id) ?? id, { offset: 'nearest' })
 }
 
 function resetFile(): void {
