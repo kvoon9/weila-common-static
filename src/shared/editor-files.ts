@@ -21,7 +21,6 @@ function collect(
   keyPrefix: string,
   idPrefix: string,
   sourcePrefix: string,
-  langOf: (relative: string) => string | undefined,
 ): EditorFile[] {
   return Object.entries(sources).map(([file, content]) => {
     const relative = file.slice(keyPrefix.length)
@@ -32,16 +31,13 @@ function collect(
       sourcePath: `${sourcePrefix}/${relative}`,
       content,
       title,
-      lang: langOf(relative),
     }
   })
 }
 
 export function loadEditorFiles(): EditorFile[] {
   return [
-    ...collect(intlSources, '../content/intl/', 'intl', 'src/content/intl', (relative) =>
-      relative.replace(/\.md$/, '').split('/').pop(),
-    ),
-    ...collect(pageSources, '../pages/', 'pages', 'src/pages', () => undefined),
+    ...collect(intlSources, '../content/intl/', 'intl', 'src/content/intl'),
+    ...collect(pageSources, '../pages/', 'pages', 'src/pages'),
   ].sort((a, b) => a.id.localeCompare(b.id))
 }
